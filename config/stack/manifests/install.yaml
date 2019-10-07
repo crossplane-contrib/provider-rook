@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stack-rook
+  labels:
+    core.crossplane.io/name: "stack-rook"
+spec:
+  selector:
+    matchLabels:
+      core.crossplane.io/name: "stack-rook"
+  replicas: 1
+  template:
+    metadata:
+      name: "stack-rook-controller"
+      labels:
+        core.crossplane.io/name: "stack-rook"
+    spec:
+      containers:
+      - name: "stack-rook-controller"
+        image: "crossplane/stack-rook:master"
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace

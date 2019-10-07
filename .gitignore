@@ -1,0 +1,8 @@
+/.cache
+/.work
+/_output
+cover.out
+/vendor
+/.vendor-new
+
+/stack-package
