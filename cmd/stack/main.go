@@ -27,8 +27,8 @@ import (
 	runtimelog "sigs.k8s.io/controller-runtime/pkg/runtime/log"
 	"sigs.k8s.io/controller-runtime/pkg/runtime/signals"
 
-	"github.com/crossplaneio/stack-gcp/apis"
-	"github.com/crossplaneio/stack-gcp/pkg/controller"
+	"github.com/crossplaneio/stack-rook/apis"
+	"github.com/crossplaneio/stack-rook/pkg/controller"
 
 	"github.com/crossplaneio/crossplane-runtime/pkg/logging"
 	crossplaneapis "github.com/crossplaneio/crossplane/apis"

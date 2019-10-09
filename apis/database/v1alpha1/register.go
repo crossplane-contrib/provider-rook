@@ -44,6 +44,14 @@ var (
 	YugabyteClusterGroupVersionKind = SchemeGroupVersion.WithKind(YugabyteClusterKind)
 )
 
+// YugabyteClusterClass type metadata.
+var (
+	YugabyteClusterClassKind             = reflect.TypeOf(YugabyteClusterClass{}).Name()
+	YugabyteClusterClassKindAPIVersion   = YugabyteClusterClassKind + "." + SchemeGroupVersion.String()
+	YugabyteClusterClassGroupVersionKind = SchemeGroupVersion.WithKind(YugabyteClusterClassKind)
+)
+
 func init() {
 	SchemeBuilder.Register(&YugabyteCluster{}, &YugabyteClusterList{})
+	SchemeBuilder.Register(&YugabyteClusterClass{}, &YugabyteClusterClassList{})
 }

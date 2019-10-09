@@ -24,10 +24,10 @@
 #  version = "2.4.0"
 
 ignored = [
-    "github.com/crossplaneio/stack-gcp/.cache",
-    "github.com/crossplaneio/stack-gcp/.work",
-    "github.com/crossplaneio/stack-gcp/_output",
-    "github.com/crossplaneio/stack-gcp/build",
+    "github.com/crossplaneio/stack-rook/.cache",
+    "github.com/crossplaneio/stack-rook/.work",
+    "github.com/crossplaneio/stack-rook/_output",
+    "github.com/crossplaneio/stack-rook/build",
     ]
 
 required = [

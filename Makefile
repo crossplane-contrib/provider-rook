@@ -37,6 +37,9 @@ GO_SUBDIRS += cmd pkg apis
 # ====================================================================================
 # Setup Kubebuilder
 
+CRD_DIR=config/crd
+API_DIR=./apis/...
+
 -include build/makelib/kubebuilder.mk
 
 # ====================================================================================
@@ -50,7 +53,6 @@ GO_SUBDIRS += cmd pkg apis
 STACK_PACKAGE=stack-package
 export STACK_PACKAGE
 STACK_PACKAGE_REGISTRY=$(STACK_PACKAGE)/.registry
-CRD_DIR=config/crd
 STACK_PACKAGE_REGISTRY_SOURCE=config/stack/manifests
 
 DOCKER_REGISTRY = crossplane
