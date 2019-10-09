@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rook-infra-dev
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: demo-cluster-creds
+  namespace: rook-infra-dev
+type: Opaque
+data:
+  endpoint: BASE64ENCODED_K8S_ENDPOINT
+  token: BASE64ENCODED_K8S_TOKEN
+  clusterCA: BASE64ENCODED_K8S_CLUSTER_CA
+---
+apiVersion: kubernetes.crossplane.io/v1alpha1
+kind: Provider
+metadata:
+  name: demo-k8s-provider
+  namespace: rook-infra-dev
+spec:
+  credentialsSecretRef:
+    name: demo-cluster-creds
