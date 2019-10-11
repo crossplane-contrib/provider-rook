@@ -34,7 +34,6 @@ import (
 	rookv1alpha1 "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1"
 
 	"github.com/crossplaneio/stack-rook/apis/database/v1alpha1"
-	"github.com/crossplaneio/stack-rook/pkg/clients"
 	"github.com/crossplaneio/stack-rook/pkg/clients/database/yugabyte"
 )
 
@@ -63,7 +62,7 @@ func (c *YugabyteClusterController) SetupWithManager(mgr ctrl.Manager) error {
 		For(&v1alpha1.YugabyteCluster{}).
 		Complete(resource.NewManagedReconciler(mgr,
 			resource.ManagedKind(v1alpha1.YugabyteClusterGroupVersionKind),
-			resource.WithExternalConnecter(&connecter{client: mgr.GetClient(), newClient: clients.NewClient})))
+			resource.WithExternalConnecter(&connecter{client: mgr.GetClient(), newClient: yugabyte.NewClient})))
 }
 
 type connecter struct {
@@ -104,8 +103,8 @@ func (e *external) Observe(ctx context.Context, mg resource.Managed) (resource.E
 	}
 
 	key := types.NamespacedName{
-		Name:      c.Name,
-		Namespace: c.Namespace,
+		Name:      c.Spec.YugabyteClusterParameters.Name,
+		Namespace: c.Spec.YugabyteClusterParameters.Namespace,
 	}
 
 	external := &rookv1alpha1.YBCluster{}
@@ -115,15 +114,16 @@ func (e *external) Observe(ctx context.Context, mg resource.Managed) (resource.E
 		return resource.ExternalObservation{ResourceExists: false}, nil
 	}
 
+	// TODO(hasheddan): what determines if available?
 	c.Status.SetConditions(runtimev1alpha1.Available())
 	resource.SetBindable(c)
-
-	// TODO(hasheddan): what determines if needs update?
 
 	o := resource.ExternalObservation{
 		ResourceExists:    true,
 		ConnectionDetails: resource.ConnectionDetails{},
 	}
+
+	// TODO(hasheddan): what connection secrets do we want to propagate?
 
 	return o, nil
 
@@ -148,8 +148,8 @@ func (e *external) Update(ctx context.Context, mg resource.Managed) (resource.Ex
 	}
 
 	key := types.NamespacedName{
-		Name:      c.Name,
-		Namespace: c.Namespace,
+		Name:      c.Spec.YugabyteClusterParameters.Name,
+		Namespace: c.Spec.YugabyteClusterParameters.Namespace,
 	}
 
 	external := &rookv1alpha1.YBCluster{}
@@ -158,7 +158,13 @@ func (e *external) Update(ctx context.Context, mg resource.Managed) (resource.Ex
 		return resource.ExternalUpdate{}, errors.Wrap(err, errGetCluster)
 	}
 
-	err := e.client.Update(ctx, external)
+	if !yugabyte.NeedsUpdate(c, external) {
+		return resource.ExternalUpdate{}, nil
+	}
+
+	update := yugabyte.CrossToRook(c)
+	update.ResourceVersion = external.ResourceVersion
+	err := e.client.Update(ctx, update)
 	return resource.ExternalUpdate{}, errors.Wrap(err, errUpdateCluster)
 }
 
@@ -171,8 +177,8 @@ func (e *external) Delete(ctx context.Context, mg resource.Managed) error {
 	c.SetConditions(runtimev1alpha1.Deleting())
 
 	key := types.NamespacedName{
-		Name:      c.Name,
-		Namespace: c.Namespace,
+		Name:      c.Spec.YugabyteClusterParameters.Name,
+		Namespace: c.Spec.YugabyteClusterParameters.Namespace,
 	}
 
 	external := &rookv1alpha1.YBCluster{}

@@ -30,8 +30,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// NewClient returns a kubernetes client given a secret with connection information
-func NewClient(ctx context.Context, s *corev1.Secret) (client.Client, error) {
+// NewClient returns a kubernetes client given a secret with connection
+// information.
+func NewClient(ctx context.Context, s *corev1.Secret, scheme *runtime.Scheme) (client.Client, error) {
 
 	u, err := url.Parse(string(s.Data[runtimev1alpha1.ResourceCredentialsSecretEndpointKey]))
 	if err != nil {
@@ -54,15 +55,10 @@ func NewClient(ctx context.Context, s *corev1.Secret) (client.Client, error) {
 		BearerToken: string(s.Data[runtimev1alpha1.ResourceCredentialsTokenKey]),
 	}
 
-	sch := runtime.NewScheme()
-	sch.AddKnownTypes(rookv1alpha1.SchemeGroupVersion,
-		&rookv1alpha1.YBCluster{},
-		&rookv1alpha1.YBClusterList{},
-	)
-	metav1.AddToGroupVersion(sch, rookv1alpha1.SchemeGroupVersion)
+	metav1.AddToGroupVersion(scheme, rookv1alpha1.SchemeGroupVersion)
 
 	// TODO(hasheddan): client options?
-	kc, err := client.New(config, client.Options{Scheme: sch})
+	kc, err := client.New(config, client.Options{Scheme: scheme})
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot create Kubernetes client")
 	}
