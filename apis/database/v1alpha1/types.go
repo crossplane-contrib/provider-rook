@@ -47,6 +47,8 @@ type PortSpec struct {
 
 // A YugabyteClusterParameters defines the desired state of a YugabyteCluster.
 type YugabyteClusterParameters struct {
+	Name        string           `json:"name"`
+	Namespace   string           `json:"namespace"`
 	Annotations rook.Annotations `json:"annotations,omitempty"`
 	Master      ServerSpec       `json:"master"`
 	TServer     ServerSpec       `json:"tserver"`
@@ -55,7 +57,7 @@ type YugabyteClusterParameters struct {
 // A YugabyteClusterSpec defines the desired state of a YugabyteCluster.
 type YugabyteClusterSpec struct {
 	runtimev1alpha1.ResourceSpec `json:",inline"`
-	YugabyteClusterParameters    `json:",inline"`
+	YugabyteClusterParameters    `json:"forProvider"`
 }
 
 // A YugabyteClusterStatus defines the current state of a YugabyteCluster.
@@ -67,7 +69,6 @@ type YugabyteClusterStatus struct {
 
 // A YugabyteCluster configures a Rook 'YugabyteCluster'
 // +kubebuilder:subresource:status
-// +kubebuilder:printcolumn:name="PROJECT-ID",type="string",JSONPath=".spec.projectID"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:printcolumn:name="SECRET-NAME",type="string",JSONPath=".spec.credentialsSecretRef.name",priority=1
 type YugabyteCluster struct {
@@ -91,7 +92,7 @@ type YugabyteClusterList struct {
 // provisioned YugabyteCluster.
 type YugabyteClusterClassSpecTemplate struct {
 	runtimev1alpha1.NonPortableClassSpecTemplate `json:",inline"`
-	YugabyteClusterParameters                    `json:",inline"`
+	YugabyteClusterParameters                    `json:"forProvider"`
 }
 
 // +kubebuilder:object:root=true
