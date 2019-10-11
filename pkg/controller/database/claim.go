@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	corev1 "k8s.io/api/core/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
@@ -47,14 +48,14 @@ func (c *PostgreSQLInstanceYugabyteClaimController) SetupWithManager(mgr ctrl.Ma
 		resource.IsManagedKind(resource.ManagedKind(v1alpha1.YugabyteClusterGroupVersionKind), mgr.GetScheme()),
 		resource.HasIndirectClassReferenceKind(mgr.GetClient(), mgr.GetScheme(), resource.ClassKinds{
 			Portable:    databasev1alpha1.PostgreSQLInstanceClassGroupVersionKind,
-			NonPortable: v1alpha1.YugabyteClusterGroupVersionKind,
+			NonPortable: v1alpha1.YugabyteClusterClassGroupVersionKind,
 		})))
 
 	r := resource.NewClaimReconciler(mgr,
 		resource.ClaimKind(databasev1alpha1.PostgreSQLInstanceGroupVersionKind),
 		resource.ClassKinds{
 			Portable:    databasev1alpha1.PostgreSQLInstanceClassGroupVersionKind,
-			NonPortable: v1alpha1.YugabyteClusterGroupVersionKind,
+			NonPortable: v1alpha1.YugabyteClusterClassGroupVersionKind,
 		},
 		resource.ManagedKind(v1alpha1.YugabyteClusterGroupVersionKind),
 		resource.WithManagedBinder(resource.NewAPIManagedStatusBinder(mgr.GetClient())),
@@ -81,35 +82,20 @@ func ConfigureYugabyteCluster(_ context.Context, cm resource.Claim, cs resource.
 		return errors.Errorf("expected resource claim %s to be %s", cm.GetName(), databasev1alpha1.PostgreSQLInstanceGroupVersionKind)
 	}
 
-	_, csok := cs.(*v1alpha1.YugabyteClusterClass)
+	c, csok := cs.(*v1alpha1.YugabyteClusterClass)
 	if !csok {
 		return errors.Errorf("expected resource class %s to be %s", cs.GetName(), v1alpha1.YugabyteClusterClassGroupVersionKind)
 	}
 
-	_, mgok := mg.(*v1alpha1.YugabyteCluster)
+	m, mgok := mg.(*v1alpha1.YugabyteCluster)
 	if !mgok {
 		return errors.Errorf("expected managed instance %s to be %s", mg.GetName(), v1alpha1.YugabyteClusterGroupVersionKind)
 	}
 
-	// spec := &v1alpha2.CloudsqlInstanceSpec{
-	// 	ResourceSpec: runtimev1alpha1.ResourceSpec{
-	// 		ReclaimPolicy: runtimev1alpha1.ReclaimRetain,
-	// 	},
-	// 	CloudsqlInstanceParameters: rs.SpecTemplate.CloudsqlInstanceParameters,
-	// }
-
-	// if pg.Spec.EngineVersion != "" {
-	// 	spec.DatabaseVersion = translateVersion(pg.Spec.EngineVersion, v1alpha2.PostgresqlDBVersionPrefix)
-	// }
-
-	// // NOTE(hasheddan): consider moving defaulting to either CRD or managed reconciler level
-	// checkEmptySpec(spec)
-
-	// spec.WriteConnectionSecretToReference = corev1.LocalObjectReference{Name: string(cm.GetUID())}
-	// spec.ProviderReference = rs.SpecTemplate.ProviderReference
-	// spec.ReclaimPolicy = rs.SpecTemplate.ReclaimPolicy
-
-	// i.Spec = *spec
+	m.Spec.WriteConnectionSecretToReference = corev1.LocalObjectReference{Name: string(cm.GetUID())}
+	m.Spec.YugabyteClusterParameters = c.SpecTemplate.YugabyteClusterParameters
+	m.Spec.ProviderReference = c.SpecTemplate.ProviderReference
+	m.Spec.ReclaimPolicy = c.SpecTemplate.ReclaimPolicy
 
 	return nil
 }
