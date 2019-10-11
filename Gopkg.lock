@@ -54,13 +54,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:5e08bc19417db78a11b0fbc8489bf4e40a3516194c9981ab6dcdde4687183f96"
+  digest = "1:5219090f660a2bdb1fc1e5f8a1849324b292866fd92f81fa030aa987fad116ae"
   name = "github.com/crossplaneio/crossplane-runtime"
   packages = [
     "apis/core/v1alpha1",
     "pkg/logging",
     "pkg/meta",
     "pkg/resource",
+    "pkg/test",
   ]
   pruneopts = "UT"
   revision = "19891e990a891d2be42f05141090fb988b6db385"
@@ -170,6 +171,21 @@
   version = "v1.3.2"
 
 [[projects]]
+  digest = "1:248e9efd818d7156968df6d7d02018d2b7b6debf3ea21e81228cf0abb29b24cd"
+  name = "github.com/google/go-cmp"
+  packages = [
+    "cmp",
+    "cmp/cmpopts",
+    "cmp/internal/diff",
+    "cmp/internal/flags",
+    "cmp/internal/function",
+    "cmp/internal/value",
+  ]
+  pruneopts = "UT"
+  revision = "2d0692c2e9617365a95b295612ac0d4415ba4627"
+  version = "v0.3.1"
+
+[[projects]]
   digest = "1:a6181aca1fd5e27103f9a920876f29ac72854df7345a39f3b01e61c8c94cc8af"
   name = "github.com/google/gofuzz"
   packages = ["."]
@@ -207,6 +223,20 @@
   pruneopts = "UT"
   revision = "7f827b33c0f158ec5dfbba01bb0b14a4541fd81d"
   version = "v0.5.3"
+
+[[projects]]
+  digest = "1:a1038ef593beb4771c8f0f9c26e8b00410acd800af5c6864651d9bf160ea1813"
+  name = "github.com/hpcloud/tail"
+  packages = [
+    ".",
+    "ratelimiter",
+    "util",
+    "watch",
+    "winfile",
+  ]
+  pruneopts = "UT"
+  revision = "a30252cb686a21eb2d0b98132633053ec2f7f1e5"
+  version = "v1.0.0"
 
 [[projects]]
   digest = "1:78d28d5b84a26159c67ea51996a230da4bc07cac648adaae1dfb5fc0ec8e40d3"
@@ -271,6 +301,56 @@
   pruneopts = "UT"
   revision = "4b7aa43c6742a2c18fdef89dd197aaae7dac7ccd"
   version = "1.0.1"
+
+[[projects]]
+  digest = "1:717e9abbff2a22363e45a4ff0ea7eca541dbf20d63e1b11fdd00cb31cb932140"
+  name = "github.com/onsi/ginkgo"
+  packages = [
+    ".",
+    "config",
+    "internal/codelocation",
+    "internal/containernode",
+    "internal/failer",
+    "internal/leafnodes",
+    "internal/remote",
+    "internal/spec",
+    "internal/spec_iterator",
+    "internal/specrunner",
+    "internal/suite",
+    "internal/testingtproxy",
+    "internal/writer",
+    "reporters",
+    "reporters/stenographer",
+    "reporters/stenographer/support/go-colorable",
+    "reporters/stenographer/support/go-isatty",
+    "types",
+  ]
+  pruneopts = "UT"
+  revision = "72b6ab036f78c4bf1a9748c3941dd7c3de54917a"
+  version = "v1.10.2"
+
+[[projects]]
+  digest = "1:f10e746cdde740b68ae11142c351de99e8a669c5aa5a2df9ac10294cb052ab39"
+  name = "github.com/onsi/gomega"
+  packages = [
+    ".",
+    "format",
+    "gbytes",
+    "gexec",
+    "internal/assertion",
+    "internal/asyncassertion",
+    "internal/oraclematcher",
+    "internal/testingtsupport",
+    "matchers",
+    "matchers/support/goraph/bipartitegraph",
+    "matchers/support/goraph/edge",
+    "matchers/support/goraph/node",
+    "matchers/support/goraph/util",
+    "types",
+  ]
+  pruneopts = "UT"
+  revision = "bdebf9e0ece900259084cfa4121b97ce1a540939"
+  version = "v1.7.0"
 
 [[projects]]
   digest = "1:e5d0bd87abc2781d14e274807a470acd180f0499f8bf5bb18606e9ec22ad9de9"
@@ -402,11 +482,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8cde82b9e8df8bb317ffa480ae0f0fb6ec98e662d272494c44c97e6b2842e915"
+  digest = "1:ba77a81e293ed717874d966f2c8253b607874364188d302b8ccc6cb8d2990457"
   name = "golang.org/x/net"
   packages = [
     "context",
     "context/ctxhttp",
+    "html",
+    "html/atom",
+    "html/charset",
     "http/httpguts",
     "http2",
     "http2/hpack",
@@ -438,11 +521,21 @@
   revision = "ef33b2fb2c414dca4bfcf6ca59cbd1d9ad00703d"
 
 [[projects]]
-  digest = "1:8d8faad6b12a3a4c819a3f9618cb6ee1fa1cfc33253abeeea8b55336721e3405"
+  digest = "1:28deae5fe892797ff37a317b5bcda96d11d1c90dadd89f1337651df3bc4c586e"
   name = "golang.org/x/text"
   packages = [
     "collate",
     "collate/build",
+    "encoding",
+    "encoding/charmap",
+    "encoding/htmlindex",
+    "encoding/internal",
+    "encoding/internal/identifier",
+    "encoding/japanese",
+    "encoding/korean",
+    "encoding/simplifiedchinese",
+    "encoding/traditionalchinese",
+    "encoding/unicode",
     "internal/colltab",
     "internal/gen",
     "internal/language",
@@ -450,7 +543,9 @@
     "internal/tag",
     "internal/triegen",
     "internal/ucd",
+    "internal/utf8internal",
     "language",
+    "runes",
     "secure/bidirule",
     "transform",
     "unicode/bidi",
@@ -538,6 +633,14 @@
   version = "v0.9.1"
 
 [[projects]]
+  branch = "v1"
+  digest = "1:0caa92e17bc0b65a98c63e5bc76a9e844cd5e56493f8fdbb28fad101a16254d9"
+  name = "gopkg.in/tomb.v1"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "dd632973f1e7218eb1089048e0798ec9ae7dceb8"
+
+[[projects]]
   digest = "1:59f10c1537d2199d9115d946927fe31165959a95190849c82ff11e05803528b0"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -600,11 +703,14 @@
   version = "kubernetes-1.14.1"
 
 [[projects]]
-  digest = "1:a0ac3d2549ab736b793e58f479c4dddf78f0a462ac6d7c40ed47c7f7a901b6b3"
+  digest = "1:65226935ef0a84716e327aa46c5a11cf2158ca6d0c79b379202d0b2c2be0e9bc"
   name = "k8s.io/apiextensions-apiserver"
   packages = [
     "pkg/apis/apiextensions",
     "pkg/apis/apiextensions/v1beta1",
+    "pkg/client/clientset/clientset",
+    "pkg/client/clientset/clientset/scheme",
+    "pkg/client/clientset/clientset/typed/apiextensions/v1beta1",
   ]
   pruneopts = "UT"
   revision = "727a075fdec8319bf095330e344b3ccc668abc73"
@@ -770,7 +876,7 @@
   revision = "69764acb6e8e900b7c05296c5d3c9c19545475f9"
 
 [[projects]]
-  digest = "1:394b4a4947a399ceaaf61991a1642c1a95cca2a088089b3cf5122ecf0ea46a04"
+  digest = "1:db7fa324423ec5f1884b0cf278ed6816c494644d6996805ea3a497f0254210e9"
   name = "sigs.k8s.io/controller-runtime"
   packages = [
     ".",
@@ -783,6 +889,8 @@
     "pkg/controller",
     "pkg/controller/controllerutil",
     "pkg/conversion",
+    "pkg/envtest",
+    "pkg/envtest/printer",
     "pkg/event",
     "pkg/handler",
     "pkg/internal/controller",
@@ -838,6 +946,18 @@
   revision = "ba11932048e4538f6e435f5ca0cdea19bf458338"
 
 [[projects]]
+  digest = "1:f368083a2d20f4be35261d8a840abce195156242f4920c85d417b9b2abcc3f94"
+  name = "sigs.k8s.io/testing_frameworks"
+  packages = [
+    "integration",
+    "integration/addr",
+    "integration/internal",
+  ]
+  pruneopts = "UT"
+  revision = "c7087048c932a346b910a2240f3a053e544eb352"
+  version = "v0.1.2"
+
+[[projects]]
   digest = "1:7719608fe0b52a4ece56c2dde37bedd95b938677d1ab0f84b8a7852e4c59f849"
   name = "sigs.k8s.io/yaml"
   packages = ["."]
@@ -853,10 +973,12 @@
     "github.com/crossplaneio/crossplane-runtime/pkg/logging",
     "github.com/crossplaneio/crossplane-runtime/pkg/meta",
     "github.com/crossplaneio/crossplane-runtime/pkg/resource",
+    "github.com/crossplaneio/crossplane-runtime/pkg/test",
     "github.com/crossplaneio/crossplane-tools/cmd/angryjet",
     "github.com/crossplaneio/crossplane/apis",
     "github.com/crossplaneio/crossplane/apis/database/v1alpha1",
     "github.com/crossplaneio/crossplane/apis/kubernetes/v1alpha1",
+    "github.com/google/go-cmp/cmp",
     "github.com/pkg/errors",
     "github.com/rook/rook/pkg/apis/rook.io/v1alpha2",
     "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1",
