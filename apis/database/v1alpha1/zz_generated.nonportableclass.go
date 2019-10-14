@@ -20,6 +20,16 @@ package v1alpha1
 
 import runtimev1alpha1 "github.com/crossplaneio/crossplane-runtime/apis/core/v1alpha1"
 
+// GetReclaimPolicy of this CockroachClusterClass.
+func (cs *CockroachClusterClass) GetReclaimPolicy() runtimev1alpha1.ReclaimPolicy {
+	return cs.SpecTemplate.ReclaimPolicy
+}
+
+// SetReclaimPolicy of this CockroachClusterClass.
+func (cs *CockroachClusterClass) SetReclaimPolicy(r runtimev1alpha1.ReclaimPolicy) {
+	cs.SpecTemplate.ReclaimPolicy = r
+}
+
 // GetReclaimPolicy of this YugabyteClusterClass.
 func (cs *YugabyteClusterClass) GetReclaimPolicy() runtimev1alpha1.ReclaimPolicy {
 	return cs.SpecTemplate.ReclaimPolicy

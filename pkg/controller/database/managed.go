@@ -49,7 +49,7 @@ const (
 	errDeleteCluster     = "cannot delete Yugabyte cluster in target Kubernetes cluster"
 )
 
-// YugabyteClusterController is responsible for adding the Cloud Memorystore
+// YugabyteClusterController is responsible for adding the YugabyteCluster
 // controller and its corresponding reconciler to the manager with any runtime configuration.
 type YugabyteClusterController struct{}
 

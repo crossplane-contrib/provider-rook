@@ -1,22 +1,22 @@
 # Human readable title of application.
-title: Crossplane GCP
+title: Crossplane Rook
 
-overviewShort: The GCP Crossplane Stack enabling resource management for the Google Cloud Platform.
+overviewShort: The GCP Crossplane Stack enabling resource management for Rook.
 overview: |-
-  The Google Cloud Platform (GCP) Crossplane Stack adds support for managing GCP resources in Kubernetes.
+  The Rook Crossplane Stack adds support for managing Rook resources from a Crossplane Kubernetes cluster.
 
-  Google Kubernetes Engine, Google Cloud SQL, Google Cloud Memorystore, and Google Cloud Storage resources can be provisioned, updated, and deleted by this stack.
+  YugabyteDB and CockroachDB cluster resources can be provisioned, updated, and deleted by this stack.
 
 # Markdown description of this entry
 readme: |
- This `stack-gcp` repository is the implementation of a Crossplane infrastructure
- [stack](https://github.com/crossplaneio/crossplane/blob/master/design/design-doc-stacks.md) for
- [Google Cloud Platform](https://cloud.google.com).
+This `stack-rook` repository is the implementation of a Crossplane infrastructure
+[stack](https://github.com/crossplaneio/crossplane/blob/master/design/design-doc-stacks.md) for
+[Rook](https://rook.io/).
  The stack that is built from the source code in this repository can be installed into a Crossplane control plane and adds the following new functionality:
 
- * Custom Resource Definitions (CRDs) that model GCP infrastructure and services (e.g. [CloudSQL](https://cloud.google.com/sql/), [GKE clusters](https://cloud.google.com/kubernetes-engine/), etc.)
- * Controllers to provision these resources in GCP based on the users desired state captured in CRDs they create
- * Implementations of Crossplane's [portable resource abstractions](https://crossplane.io/docs/master/running-resources.html), enabling GCP resources to fulfill a user's general need for cloud services
+ * Custom Resource Definitions (CRDs) that model Rook infrastructure and services (e.g. [Yugabyte](https://github.com/yugabyte/yugabyte-db), [CockroachDB](https://github.com/cockroachdb/cockroach), etc.)
+ * Controllers to provision these resources in a Rook Kubernetes cluster based on the users desired state captured in CRDs they create
+ * Implementations of Crossplane's [portable resource abstractions](https://crossplane.io/docs/master/running-resources.html), enabling Rook resources to fulfill a user's general need for cloud services
 
 # Version of project (optional)
 # If omitted the version will be filled with the docker tag
@@ -38,13 +38,12 @@ company: Crossplane
 
 # Keywords that describe this application and help search indexing
 keywords:
-- "google"
-- "gcp"
+- "rook"
 - "infrastructure"
 
 # Links to more information about the application (about page, source code, etc.)
 website: "https://crossplane.io"
-source: "https://github.com/crossplaneio/stack-gcp"
+source: "https://github.com/crossplaneio/stack-rook"
 
 # RBAC ClusterRoles will be generated permitting this stack to use all verbs on all
 # resources in the groups listed below.

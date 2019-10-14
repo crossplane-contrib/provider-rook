@@ -20,6 +20,7 @@ import (
 	"context"
 	"reflect"
 
+	rook "github.com/rook/rook/pkg/apis/rook.io/v1alpha2"
 	rookv1alpha1 "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -52,7 +53,7 @@ func CrossToRook(c *v1alpha1.YugabyteCluster) *rookv1alpha1.YBCluster {
 			Namespace: c.Spec.YugabyteClusterParameters.Namespace,
 		},
 		Spec: rookv1alpha1.YBClusterSpec{
-			Annotations: c.Spec.YugabyteClusterParameters.Annotations,
+			Annotations: rook.Annotations(c.Spec.YugabyteClusterParameters.Annotations),
 			Master:      convertServer(c.Spec.YugabyteClusterParameters.Master),
 			TServer:     convertServer(c.Spec.YugabyteClusterParameters.TServer),
 		},
@@ -62,7 +63,7 @@ func CrossToRook(c *v1alpha1.YugabyteCluster) *rookv1alpha1.YBCluster {
 // NeedsUpdate determines whether the external Rook Yugabyte cluster needs to be
 // updated.
 func NeedsUpdate(c *v1alpha1.YugabyteCluster, e *rookv1alpha1.YBCluster) bool {
-	if !reflect.DeepEqual(c.Spec.YugabyteClusterParameters.Annotations, e.Spec.Annotations) {
+	if !reflect.DeepEqual(rook.Annotations(c.Spec.YugabyteClusterParameters.Annotations), e.Spec.Annotations) {
 		return true
 	}
 	if !reflect.DeepEqual(convertServer(c.Spec.YugabyteClusterParameters.Master), e.Spec.Master) {

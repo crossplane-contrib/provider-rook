@@ -25,8 +25,8 @@ import (
 	"github.com/crossplaneio/crossplane-runtime/pkg/test"
 	databasev1alpha1 "github.com/crossplaneio/crossplane/apis/database/v1alpha1"
 	"github.com/crossplaneio/stack-rook/apis/database/v1alpha1"
+	corev1alpha1 "github.com/crossplaneio/stack-rook/apis/v1alpha1"
 	"github.com/google/go-cmp/cmp"
-	rook "github.com/rook/rook/pkg/apis/rook.io/v1alpha2"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -68,7 +68,7 @@ func TestConfigureYugabyteCluster(t *testing.T) {
 	params := v1alpha1.YugabyteClusterParameters{
 		Name:        "cool-yugabyte",
 		Namespace:   "cool-yugabyte-ns",
-		Annotations: rook.Annotations(map[string]string{"label": "value"}),
+		Annotations: corev1alpha1.Annotations(map[string]string{"label": "value"}),
 		Master:      server,
 		TServer:     server,
 	}

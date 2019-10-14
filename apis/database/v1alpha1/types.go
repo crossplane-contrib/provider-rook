@@ -18,8 +18,8 @@ package v1alpha1
 
 import (
 	runtimev1alpha1 "github.com/crossplaneio/crossplane-runtime/apis/core/v1alpha1"
+	"github.com/crossplaneio/stack-rook/apis/v1alpha1"
 
-	rook "github.com/rook/rook/pkg/apis/rook.io/v1alpha2"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -47,11 +47,11 @@ type PortSpec struct {
 
 // A YugabyteClusterParameters defines the desired state of a YugabyteCluster.
 type YugabyteClusterParameters struct {
-	Name        string           `json:"name"`
-	Namespace   string           `json:"namespace"`
-	Annotations rook.Annotations `json:"annotations,omitempty"`
-	Master      ServerSpec       `json:"master"`
-	TServer     ServerSpec       `json:"tserver"`
+	Name        string               `json:"name"`
+	Namespace   string               `json:"namespace"`
+	Annotations v1alpha1.Annotations `json:"annotations,omitempty"`
+	Master      ServerSpec           `json:"master"`
+	TServer     ServerSpec           `json:"tserver"`
 }
 
 // A YugabyteClusterSpec defines the desired state of a YugabyteCluster.
@@ -114,9 +114,87 @@ type YugabyteClusterClass struct {
 
 // +kubebuilder:object:root=true
 
-// YugabyteClusterClassList contains a list of cloud memorystore resource classes.
+// YugabyteClusterClassList contains a list of yugabyte cluster resource classes.
 type YugabyteClusterClassList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
 	Items           []YugabyteClusterClass `json:"items"`
+}
+
+// A CockroachClusterParameters defines the desired state of a CockroachCluster.
+type CockroachClusterParameters struct {
+	// The annotations-related configuration to add/set on each Pod related object.
+	Annotations         v1alpha1.Annotations      `json:"annotations,omitempty"`
+	Storage             v1alpha1.StorageScopeSpec `json:"scope,omitempty"`
+	Network             NetworkSpec               `json:"network,omitempty"`
+	Secure              bool                      `json:"secure,omitempty"`
+	CachePercent        int                       `json:"cachePercent,omitempty"`
+	MaxSQLMemoryPercent int                       `json:"maxSQLMemoryPercent,omitempty"`
+}
+
+// A CockroachClusterSpec defines the desired state of a CockroachCluster.
+type CockroachClusterSpec struct {
+	runtimev1alpha1.ResourceSpec `json:",inline"`
+	CockroachClusterParameters   `json:"forProvider"`
+}
+
+// A CockroachClusterStatus defines the current state of a CockroachCluster.
+type CockroachClusterStatus struct {
+	runtimev1alpha1.ResourceStatus `json:",inline"`
+}
+
+// +kubebuilder:object:root=true
+
+// A CockroachCluster configures a Rook 'CockroachCluster'
+// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
+// +kubebuilder:printcolumn:name="SECRET-NAME",type="string",JSONPath=".spec.credentialsSecretRef.name",priority=1
+type CockroachCluster struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec   CockroachClusterSpec   `json:"spec,omitempty"`
+	Status CockroachClusterStatus `json:"status,omitempty"`
+}
+
+// +kubebuilder:object:root=true
+
+// CockroachClusterList contains a list of CockroachCluster
+type CockroachClusterList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []CockroachCluster `json:"items"`
+}
+
+// A CockroachClusterClassSpecTemplate is a template for the spec of a dynamically
+// provisioned CockroachCluster.
+type CockroachClusterClassSpecTemplate struct {
+	runtimev1alpha1.NonPortableClassSpecTemplate `json:",inline"`
+	CockroachClusterParameters                   `json:"forProvider"`
+}
+
+// +kubebuilder:object:root=true
+
+// A CockroachClusterClass is a non-portable resource class. It defines the desired
+// spec of resource claims that use it to dynamically provision a managed
+// resource.
+// +kubebuilder:printcolumn:name="PROVIDER-REF",type="string",JSONPath=".specTemplate.providerRef.name"
+// +kubebuilder:printcolumn:name="RECLAIM-POLICY",type="string",JSONPath=".specTemplate.reclaimPolicy"
+// +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
+type CockroachClusterClass struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	// SpecTemplate is a template for the spec of a dynamically provisioned
+	// CockroachCluster.
+	SpecTemplate CockroachClusterClassSpecTemplate `json:"specTemplate"`
+}
+
+// +kubebuilder:object:root=true
+
+// CockroachClusterClassList contains a list of cockroach cluster resource classes.
+type CockroachClusterClassList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []CockroachClusterClass `json:"items"`
 }

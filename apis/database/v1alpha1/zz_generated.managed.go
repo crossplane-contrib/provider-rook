@@ -23,6 +23,61 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
+// GetBindingPhase of this CockroachCluster.
+func (mg *CockroachCluster) GetBindingPhase() runtimev1alpha1.BindingPhase {
+	return mg.Status.GetBindingPhase()
+}
+
+// GetClaimReference of this CockroachCluster.
+func (mg *CockroachCluster) GetClaimReference() *corev1.ObjectReference {
+	return mg.Spec.ClaimReference
+}
+
+// GetNonPortableClassReference of this CockroachCluster.
+func (mg *CockroachCluster) GetNonPortableClassReference() *corev1.ObjectReference {
+	return mg.Spec.NonPortableClassReference
+}
+
+// GetReclaimPolicy of this CockroachCluster.
+func (mg *CockroachCluster) GetReclaimPolicy() runtimev1alpha1.ReclaimPolicy {
+	return mg.Spec.ReclaimPolicy
+}
+
+// GetWriteConnectionSecretToReference of this CockroachCluster.
+func (mg *CockroachCluster) GetWriteConnectionSecretToReference() corev1.LocalObjectReference {
+	return mg.Spec.WriteConnectionSecretToReference
+}
+
+// SetBindingPhase of this CockroachCluster.
+func (mg *CockroachCluster) SetBindingPhase(p runtimev1alpha1.BindingPhase) {
+	mg.Status.SetBindingPhase(p)
+}
+
+// SetClaimReference of this CockroachCluster.
+func (mg *CockroachCluster) SetClaimReference(r *corev1.ObjectReference) {
+	mg.Spec.ClaimReference = r
+}
+
+// SetConditions of this CockroachCluster.
+func (mg *CockroachCluster) SetConditions(c ...runtimev1alpha1.Condition) {
+	mg.Status.SetConditions(c...)
+}
+
+// SetNonPortableClassReference of this CockroachCluster.
+func (mg *CockroachCluster) SetNonPortableClassReference(r *corev1.ObjectReference) {
+	mg.Spec.NonPortableClassReference = r
+}
+
+// SetReclaimPolicy of this CockroachCluster.
+func (mg *CockroachCluster) SetReclaimPolicy(r runtimev1alpha1.ReclaimPolicy) {
+	mg.Spec.ReclaimPolicy = r
+}
+
+// SetWriteConnectionSecretToReference of this CockroachCluster.
+func (mg *CockroachCluster) SetWriteConnectionSecretToReference(r corev1.LocalObjectReference) {
+	mg.Spec.WriteConnectionSecretToReference = r
+}
+
 // GetBindingPhase of this YugabyteCluster.
 func (mg *YugabyteCluster) GetBindingPhase() runtimev1alpha1.BindingPhase {
 	return mg.Status.GetBindingPhase()

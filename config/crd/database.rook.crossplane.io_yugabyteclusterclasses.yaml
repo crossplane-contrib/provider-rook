@@ -53,6 +53,8 @@ spec:
                 annotations:
                   additionalProperties:
                     type: string
+                  description: Annotations are a Crossplane representation of Rook
+                    Annotations.
                   type: object
                 master:
                   description: ServerSpec describes server related settings of the

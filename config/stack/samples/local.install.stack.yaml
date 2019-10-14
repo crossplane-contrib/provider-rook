@@ -2,8 +2,8 @@
 apiVersion: stacks.crossplane.io/v1alpha1
 kind: ClusterStackInstall
 metadata:
-  name: stack-gcp
-  namespace: gcp
+  name: stack-rook
+  namespace: rook
 spec:
   source: localhost:5000
-  package: "crossplane/stack-gcp"
+  package: "crossplane/stack-rook"
