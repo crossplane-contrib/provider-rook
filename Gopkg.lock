@@ -263,6 +263,18 @@
   version = "v1.1.7"
 
 [[projects]]
+  digest = "1:12cb143f2148bf54bcd9fe622abac17325e85eeb1d84b8ec6caf1c80232108fd"
+  name = "github.com/lib/pq"
+  packages = [
+    ".",
+    "oid",
+    "scram",
+  ]
+  pruneopts = "UT"
+  revision = "3427c32cb71afc948325f299f040e53c1dd78979"
+  version = "v1.2.0"
+
+[[projects]]
   digest = "1:c658e84ad3916da105a761660dcaeb01e63416c8ec7bc62256a9b411a05fcd67"
   name = "github.com/mattn/go-colorable"
   packages = ["."]
@@ -413,9 +425,11 @@
   version = "v0.0.5"
 
 [[projects]]
-  digest = "1:70bf88086e30acf07fc3a09c93edde110749ffe472dc70f8ab77ae66829bed46"
+  digest = "1:ab1c372d99dd8bdf2f75fbfbf140e4cb94e61d3aea483ded35973d79d3a87f83"
   name = "github.com/rook/rook"
   packages = [
+    "pkg/apis/cockroachdb.rook.io",
+    "pkg/apis/cockroachdb.rook.io/v1alpha1",
     "pkg/apis/rook.io",
     "pkg/apis/rook.io/v1alpha2",
     "pkg/apis/yugabytedb.rook.io",
@@ -979,11 +993,14 @@
     "github.com/crossplaneio/crossplane/apis/database/v1alpha1",
     "github.com/crossplaneio/crossplane/apis/kubernetes/v1alpha1",
     "github.com/google/go-cmp/cmp",
+    "github.com/lib/pq",
     "github.com/pkg/errors",
+    "github.com/rook/rook/pkg/apis/cockroachdb.rook.io/v1alpha1",
     "github.com/rook/rook/pkg/apis/rook.io/v1alpha2",
     "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1",
     "gopkg.in/alecthomas/kingpin.v2",
     "k8s.io/api/core/v1",
+    "k8s.io/apimachinery/pkg/api/errors",
     "k8s.io/apimachinery/pkg/apis/meta/v1",
     "k8s.io/apimachinery/pkg/runtime",
     "k8s.io/apimachinery/pkg/runtime/schema",

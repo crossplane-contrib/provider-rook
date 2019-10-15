@@ -23,6 +23,7 @@ import (
 
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -39,14 +40,14 @@ import (
 
 // Error strings.
 const (
-	errGetProvider       = "cannot get Provider"
-	errGetProviderSecret = "cannot get Provider Secret"
-	errNewClient         = "cannot create new Kubernetes client"
-	errNotCluster        = "managed resource is not an Yugabyte cluster"
-	errGetCluster        = "cannot get Yugabyte cluster in target Kubernetes cluster"
-	errCreateCluster     = "cannot create Yugabyte cluster in target Kubernetes cluster"
-	errUpdateCluster     = "cannot update Yugabyte cluster in target Kubernetes cluster"
-	errDeleteCluster     = "cannot delete Yugabyte cluster in target Kubernetes cluster"
+	errGetYugabyteProvider       = "cannot get Provider"
+	errGetYugabyteProviderSecret = "cannot get Provider Secret"
+	errNewYugabyteClient         = "cannot create new Kubernetes client"
+	errNotYugabyteCluster        = "managed resource is not an Yugabyte cluster"
+	errGetYugabyteCluster        = "cannot get Yugabyte cluster in target Kubernetes cluster"
+	errCreateYugabyteCluster     = "cannot create Yugabyte cluster in target Kubernetes cluster"
+	errUpdateYugabyteCluster     = "cannot update Yugabyte cluster in target Kubernetes cluster"
+	errDeleteYugabyteCluster     = "cannot delete Yugabyte cluster in target Kubernetes cluster"
 )
 
 // YugabyteClusterController is responsible for adding the YugabyteCluster
@@ -62,44 +63,44 @@ func (c *YugabyteClusterController) SetupWithManager(mgr ctrl.Manager) error {
 		For(&v1alpha1.YugabyteCluster{}).
 		Complete(resource.NewManagedReconciler(mgr,
 			resource.ManagedKind(v1alpha1.YugabyteClusterGroupVersionKind),
-			resource.WithExternalConnecter(&connecter{client: mgr.GetClient(), newClient: yugabyte.NewClient})))
+			resource.WithExternalConnecter(&yugabyteConnecter{client: mgr.GetClient(), newClient: yugabyte.NewClient})))
 }
 
-type connecter struct {
+type yugabyteConnecter struct {
 	client    client.Client
 	newClient func(ctx context.Context, secret *corev1.Secret) (client.Client, error)
 }
 
-func (c *connecter) Connect(ctx context.Context, mg resource.Managed) (resource.ExternalClient, error) {
+func (c *yugabyteConnecter) Connect(ctx context.Context, mg resource.Managed) (resource.ExternalClient, error) {
 	i, ok := mg.(*v1alpha1.YugabyteCluster)
 	if !ok {
-		return nil, errors.New(errNotCluster)
+		return nil, errors.New(errNotYugabyteCluster)
 	}
 
 	p := &kubev1alpha1.Provider{}
 	n := meta.NamespacedNameOf(i.Spec.ProviderReference)
 	if err := c.client.Get(ctx, n, p); err != nil {
-		return nil, errors.Wrap(err, errGetProvider)
+		return nil, errors.Wrap(err, errGetYugabyteProvider)
 	}
 
 	s := &corev1.Secret{}
 	n = types.NamespacedName{Namespace: p.Namespace, Name: p.Spec.Secret.Name}
 	if err := c.client.Get(ctx, n, s); err != nil {
-		return nil, errors.Wrap(err, errGetProviderSecret)
+		return nil, errors.Wrap(err, errGetYugabyteProviderSecret)
 	}
 
 	client, err := c.newClient(ctx, s)
-	return &external{client: client}, errors.Wrap(err, errNewClient)
+	return &yugabyteExternal{client: client}, errors.Wrap(err, errNewYugabyteClient)
 }
 
-type external struct {
+type yugabyteExternal struct {
 	client client.Client
 }
 
-func (e *external) Observe(ctx context.Context, mg resource.Managed) (resource.ExternalObservation, error) {
+func (e *yugabyteExternal) Observe(ctx context.Context, mg resource.Managed) (resource.ExternalObservation, error) {
 	c, ok := mg.(*v1alpha1.YugabyteCluster)
 	if !ok {
-		return resource.ExternalObservation{}, errors.New(errNotCluster)
+		return resource.ExternalObservation{}, errors.New(errNotYugabyteCluster)
 	}
 
 	key := types.NamespacedName{
@@ -109,12 +110,17 @@ func (e *external) Observe(ctx context.Context, mg resource.Managed) (resource.E
 
 	external := &rookv1alpha1.YBCluster{}
 
-	if err := e.client.Get(ctx, key, external); err != nil {
-		// TODO(hasheddan): check error to see if it is due to object not existing
+	err := e.client.Get(ctx, key, external)
+	if kerrors.IsNotFound(err) {
 		return resource.ExternalObservation{ResourceExists: false}, nil
 	}
+	if err != nil {
+		return resource.ExternalObservation{}, errors.Wrap(err, errGetYugabyteCluster)
+	}
 
-	// TODO(hasheddan): what determines if available?
+	// If we are able to get the resource YBCluster instance, we will consider
+	// it available. If a status is added to the YBCluster CRD in the future we
+	// should check it to set conditions.
 	c.Status.SetConditions(runtimev1alpha1.Available())
 	resource.SetBindable(c)
 
@@ -123,28 +129,26 @@ func (e *external) Observe(ctx context.Context, mg resource.Managed) (resource.E
 		ConnectionDetails: resource.ConnectionDetails{},
 	}
 
-	// TODO(hasheddan): what connection secrets do we want to propagate?
-
 	return o, nil
 
 }
 
-func (e *external) Create(ctx context.Context, mg resource.Managed) (resource.ExternalCreation, error) {
+func (e *yugabyteExternal) Create(ctx context.Context, mg resource.Managed) (resource.ExternalCreation, error) {
 	c, ok := mg.(*v1alpha1.YugabyteCluster)
 	if !ok {
-		return resource.ExternalCreation{}, errors.New(errNotCluster)
+		return resource.ExternalCreation{}, errors.New(errNotYugabyteCluster)
 	}
 
 	c.Status.SetConditions(runtimev1alpha1.Creating())
 
 	err := e.client.Create(ctx, yugabyte.CrossToRook(c))
-	return resource.ExternalCreation{}, errors.Wrap(err, errCreateCluster)
+	return resource.ExternalCreation{}, errors.Wrap(err, errCreateYugabyteCluster)
 }
 
-func (e *external) Update(ctx context.Context, mg resource.Managed) (resource.ExternalUpdate, error) {
+func (e *yugabyteExternal) Update(ctx context.Context, mg resource.Managed) (resource.ExternalUpdate, error) {
 	c, ok := mg.(*v1alpha1.YugabyteCluster)
 	if !ok {
-		return resource.ExternalUpdate{}, errors.New(errNotCluster)
+		return resource.ExternalUpdate{}, errors.New(errNotYugabyteCluster)
 	}
 
 	key := types.NamespacedName{
@@ -155,7 +159,7 @@ func (e *external) Update(ctx context.Context, mg resource.Managed) (resource.Ex
 	external := &rookv1alpha1.YBCluster{}
 
 	if err := e.client.Get(ctx, key, external); err != nil {
-		return resource.ExternalUpdate{}, errors.Wrap(err, errGetCluster)
+		return resource.ExternalUpdate{}, errors.Wrap(err, errGetYugabyteCluster)
 	}
 
 	if !yugabyte.NeedsUpdate(c, external) {
@@ -165,13 +169,13 @@ func (e *external) Update(ctx context.Context, mg resource.Managed) (resource.Ex
 	update := yugabyte.CrossToRook(c)
 	update.ResourceVersion = external.ResourceVersion
 	err := e.client.Update(ctx, update)
-	return resource.ExternalUpdate{}, errors.Wrap(err, errUpdateCluster)
+	return resource.ExternalUpdate{}, errors.Wrap(err, errUpdateYugabyteCluster)
 }
 
-func (e *external) Delete(ctx context.Context, mg resource.Managed) error {
+func (e *yugabyteExternal) Delete(ctx context.Context, mg resource.Managed) error {
 	c, ok := mg.(*v1alpha1.YugabyteCluster)
 	if !ok {
-		return errors.New(errNotCluster)
+		return errors.New(errNotYugabyteCluster)
 	}
 
 	c.SetConditions(runtimev1alpha1.Deleting())
@@ -184,9 +188,12 @@ func (e *external) Delete(ctx context.Context, mg resource.Managed) error {
 	external := &rookv1alpha1.YBCluster{}
 
 	if err := e.client.Get(ctx, key, external); err != nil {
-		return errors.Wrap(err, errGetCluster)
+		if kerrors.IsNotFound(err) {
+			return nil
+		}
+		return errors.Wrap(err, errGetYugabyteCluster)
 	}
 
 	err := e.client.Delete(ctx, external)
-	return errors.Wrap(err, errDeleteCluster)
+	return errors.Wrap(err, errDeleteYugabyteCluster)
 }

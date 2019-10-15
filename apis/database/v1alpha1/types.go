@@ -18,10 +18,11 @@ package v1alpha1
 
 import (
 	runtimev1alpha1 "github.com/crossplaneio/crossplane-runtime/apis/core/v1alpha1"
-	"github.com/crossplaneio/stack-rook/apis/v1alpha1"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/crossplaneio/stack-rook/apis/v1alpha1"
 )
 
 // ServerSpec describes server related settings of the cluster
@@ -123,6 +124,8 @@ type YugabyteClusterClassList struct {
 
 // A CockroachClusterParameters defines the desired state of a CockroachCluster.
 type CockroachClusterParameters struct {
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
 	// The annotations-related configuration to add/set on each Pod related object.
 	Annotations         v1alpha1.Annotations      `json:"annotations,omitempty"`
 	Storage             v1alpha1.StorageScopeSpec `json:"scope,omitempty"`

@@ -134,6 +134,10 @@ spec:
                   type: integer
                 maxSQLMemoryPercent:
                   type: integer
+                name:
+                  type: string
+                namespace:
+                  type: string
                 network:
                   description: NetworkSpec describes network related settings of the
                     cluster
@@ -375,6 +379,9 @@ spec:
                   type: object
                 secure:
                   type: boolean
+              required:
+              - name
+              - namespace
               type: object
             providerRef:
               description: ProviderReference specifies the provider that will be used

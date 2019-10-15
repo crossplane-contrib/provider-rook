@@ -14,14 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package yugabyte
+package cockroach
 
 import (
 	"context"
 	"reflect"
 
+	rookv1alpha1 "github.com/rook/rook/pkg/apis/cockroachdb.rook.io/v1alpha1"
 	rook "github.com/rook/rook/pkg/apis/rook.io/v1alpha2"
-	rookv1alpha1 "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -36,8 +36,8 @@ import (
 func NewClient(ctx context.Context, s *corev1.Secret) (client.Client, error) {
 	scheme := runtime.NewScheme()
 	scheme.AddKnownTypes(rookv1alpha1.SchemeGroupVersion,
-		&rookv1alpha1.YBCluster{},
-		&rookv1alpha1.YBClusterList{},
+		&rookv1alpha1.Cluster{},
+		&rookv1alpha1.ClusterList{},
 	)
 
 	return clients.NewClient(ctx, s, scheme)
@@ -45,45 +45,54 @@ func NewClient(ctx context.Context, s *corev1.Secret) (client.Client, error) {
 
 // CrossToRook converts a Crossplane Yugabyte cluster object to a Rook Yugabyte
 // cluster object.
-func CrossToRook(c *v1alpha1.YugabyteCluster) *rookv1alpha1.YBCluster {
-	params := c.Spec.YugabyteClusterParameters
-	return &rookv1alpha1.YBCluster{
+func CrossToRook(c *v1alpha1.CockroachCluster) *rookv1alpha1.Cluster {
+	params := c.Spec.CockroachClusterParameters
+	return &rookv1alpha1.Cluster{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      params.Name,
 			Namespace: params.Namespace,
 		},
-		Spec: rookv1alpha1.YBClusterSpec{
+		Spec: rookv1alpha1.ClusterSpec{
 			Annotations: rook.Annotations(params.Annotations),
-			Master:      convertServer(params.Master),
-			TServer:     convertServer(params.TServer),
+			Storage: rook.StorageScopeSpec{
+				NodeCount: params.Storage.NodeCount,
+				Selection: rook.Selection{
+					VolumeClaimTemplates: params.Storage.VolumeClaimTemplates,
+				},
+			},
+			Network: rookv1alpha1.NetworkSpec{
+				Ports: convertPorts(params.Network.Ports),
+			},
+			Secure:              params.Secure,
+			CachePercent:        params.CachePercent,
+			MaxSQLMemoryPercent: params.MaxSQLMemoryPercent,
 		},
 	}
 }
 
-// NeedsUpdate determines whether the external Rook Yugabyte cluster needs to be
+// NeedsUpdate determines whether the external Rook Cockroach cluster needs to be
 // updated.
-func NeedsUpdate(c *v1alpha1.YugabyteCluster, e *rookv1alpha1.YBCluster) bool {
-	params := c.Spec.YugabyteClusterParameters
+func NeedsUpdate(c *v1alpha1.CockroachCluster, e *rookv1alpha1.Cluster) bool {
+	params := c.Spec.CockroachClusterParameters
 	if !reflect.DeepEqual(rook.Annotations(params.Annotations), e.Spec.Annotations) {
 		return true
 	}
-	if !reflect.DeepEqual(convertServer(params.Master), e.Spec.Master) {
+	if !reflect.DeepEqual(params.Storage.NodeCount, e.Spec.Storage.NodeCount) {
 		return true
 	}
-	if !reflect.DeepEqual(convertServer(params.TServer), e.Spec.TServer) {
+	if !reflect.DeepEqual(params.Storage.VolumeClaimTemplates, e.Spec.Storage.VolumeClaimTemplates) {
+		return true
+	}
+	if !reflect.DeepEqual(convertPorts(params.Network.Ports), e.Spec.Network.Ports) {
+		return true
+	}
+	if !reflect.DeepEqual(params.CachePercent, e.Spec.CachePercent) {
+		return true
+	}
+	if !reflect.DeepEqual(params.MaxSQLMemoryPercent, e.Spec.MaxSQLMemoryPercent) {
 		return true
 	}
 	return false
-}
-
-func convertServer(server v1alpha1.ServerSpec) rookv1alpha1.ServerSpec {
-	return rookv1alpha1.ServerSpec{
-		Replicas: server.Replicas,
-		Network: rookv1alpha1.NetworkSpec{
-			Ports: convertPorts(server.Network.Ports),
-		},
-		VolumeClaimTemplate: server.VolumeClaimTemplate,
-	}
 }
 
 func convertPorts(ports []v1alpha1.PortSpec) []rookv1alpha1.PortSpec {

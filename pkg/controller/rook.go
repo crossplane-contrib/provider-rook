@@ -33,6 +33,8 @@ func (c *Controllers) SetupWithManager(mgr ctrl.Manager) error {
 	}{
 		&database.PostgreSQLInstanceYugabyteClaimController{},
 		&database.YugabyteClusterController{},
+		&database.PostgreSQLInstanceCockroachClaimController{},
+		&database.CockroachClusterController{},
 	}
 	for _, c := range controllers {
 		if err := c.SetupWithManager(mgr); err != nil {
