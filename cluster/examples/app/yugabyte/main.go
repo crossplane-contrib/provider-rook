@@ -13,7 +13,7 @@ const (
 	port     = 5433
 	user     = "postgres"
 	password = "postgres"
-	dbname   = "postgres"
+	dbname   = "yb_demo"
 )
 
 func main() {
@@ -22,6 +22,12 @@ func main() {
 		host, port, user, password, dbname)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
+		log.Fatal(err)
+	}
+
+	db.SetMaxIdleConns(0)
+
+	if err := db.Ping(); err != nil {
 		log.Fatal(err)
 	}
 

@@ -14,14 +14,13 @@ spec:
     scope:
       nodeCount: 3
       volumeClaimTemplates:
-        - spec:
-            accessModes: [ "ReadWriteOnce" ]
-            # Uncomment and specify your StorageClass, otherwise
-            # the cluster admin defined default StorageClass will be used.
-            #storageClassName: "my-storage-class"
-            resources:
-              requests:
-                storage: "100Gi"
+      - metadata:
+          name: rook-cockroachdb-data
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          resources:
+            requests:
+              storage: "1Gi"
     network:
       ports:
       - name: http
@@ -31,6 +30,3 @@ spec:
     secure: false
     cachePercent: 25
     maxSQLMemoryPercent: 25
-    # A key/value list of annotations
-    annotations:
-    #  key: value

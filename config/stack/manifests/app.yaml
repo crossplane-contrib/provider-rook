@@ -1,7 +1,7 @@
 # Human readable title of application.
 title: Crossplane Rook
 
-overviewShort: The GCP Crossplane Stack enabling resource management for Rook.
+overviewShort: The Rook Crossplane Stack enabling resource management for Rook.
 overview: |-
   The Rook Crossplane Stack adds support for managing Rook resources from a Crossplane Kubernetes cluster.
 

@@ -20,93 +20,87 @@ import (
 	"context"
 	"testing"
 
-	"k8s.io/apimachinery/pkg/runtime/schema"
-
 	runtimev1alpha1 "github.com/crossplaneio/crossplane-runtime/apis/core/v1alpha1"
 	"github.com/crossplaneio/crossplane-runtime/pkg/resource"
 	"github.com/crossplaneio/crossplane-runtime/pkg/test"
 	kubev1alpha1 "github.com/crossplaneio/crossplane/apis/kubernetes/v1alpha1"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
-	rookv1alpha1 "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1"
+	rookv1alpha1 "github.com/rook/rook/pkg/apis/cockroachdb.rook.io/v1alpha1"
+	rook "github.com/rook/rook/pkg/apis/rook.io/v1alpha2"
 	corev1 "k8s.io/api/core/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/crossplaneio/stack-rook/apis/database/v1alpha1"
+	corev1alpha1 "github.com/crossplaneio/stack-rook/apis/v1alpha1"
 )
 
-const (
-	name      = "cool-name"
-	namespace = "cool-namespace"
-	uid       = types.UID("definitely-a-uuid")
-
-	providerName       = "cool-rook"
-	providerSecretName = "cool-rook-secret"
-	providerSecretKey  = "credentials.json"
-	providerSecretData = "definitelyjson"
-
-	connectionSecretName = "cool-connection-secret"
-)
-
-var errorBoom = errors.New("boom")
-var errorYugabyteNotFound = kerrors.NewNotFound(
+var errorCockroachNotFound = kerrors.NewNotFound(
 	schema.GroupResource{
-		Group:    "yugabytedb.rook.io",
-		Resource: "YBCluster"},
+		Group:    "cockroachdb.rook.io",
+		Resource: "Cluster"},
 	"boom")
 
-type yugabyteStrange struct {
+type cockroachStrange struct {
 	resource.Managed
 }
 
-type yugabyteClusterModifier func(*v1alpha1.YugabyteCluster)
+type cockroachClusterModifier func(*v1alpha1.CockroachCluster)
 
-func yugabyteWithConditions(c ...runtimev1alpha1.Condition) yugabyteClusterModifier {
-	return func(i *v1alpha1.YugabyteCluster) { i.Status.SetConditions(c...) }
+func withConditions(c ...runtimev1alpha1.Condition) cockroachClusterModifier {
+	return func(i *v1alpha1.CockroachCluster) { i.Status.SetConditions(c...) }
 }
 
-func yugabyteWithBindingPhase(p runtimev1alpha1.BindingPhase) yugabyteClusterModifier {
-	return func(i *v1alpha1.YugabyteCluster) { i.Status.SetBindingPhase(p) }
+func withBindingPhase(p runtimev1alpha1.BindingPhase) cockroachClusterModifier {
+	return func(i *v1alpha1.CockroachCluster) { i.Status.SetBindingPhase(p) }
 }
 
-func yugabyteCluster(im ...yugabyteClusterModifier) *v1alpha1.YugabyteCluster {
-	i := &v1alpha1.YugabyteCluster{
+func cockroachCluster(im ...cockroachClusterModifier) *v1alpha1.CockroachCluster {
+	i := &v1alpha1.CockroachCluster{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace:  namespace,
 			Name:       name,
 			UID:        uid,
 			Finalizers: []string{},
 		},
-		Spec: v1alpha1.YugabyteClusterSpec{
+		Spec: v1alpha1.CockroachClusterSpec{
 			ResourceSpec: runtimev1alpha1.ResourceSpec{
 				ProviderReference:                &corev1.ObjectReference{Namespace: namespace, Name: providerName},
 				WriteConnectionSecretToReference: corev1.LocalObjectReference{Name: connectionSecretName},
 			},
-			YugabyteClusterParameters: v1alpha1.YugabyteClusterParameters{
-				Name:      name,
-				Namespace: namespace,
-				Master: v1alpha1.ServerSpec{
-					Replicas: int32(3),
-					Network: v1alpha1.NetworkSpec{
-						Ports: []v1alpha1.PortSpec{{
-							Name: "cool-master-port",
-							Port: int32(7000),
-						}},
+			CockroachClusterParameters: v1alpha1.CockroachClusterParameters{
+				Name:        name,
+				Namespace:   namespace,
+				Annotations: corev1alpha1.Annotations(map[string]string{"label": "value"}),
+				Storage: corev1alpha1.StorageScopeSpec{
+					NodeCount: 3,
+					VolumeClaimTemplates: []corev1.PersistentVolumeClaim{
+						{
+							ObjectMeta: metav1.ObjectMeta{
+								Name: "rook-cockroachdb-test",
+							},
+							Spec: corev1.PersistentVolumeClaimSpec{
+								AccessModes: []corev1.PersistentVolumeAccessMode{"ReadWriteOnce"},
+								// Test does not check resource requirements due cmp pkg
+								// inability to compare unexported fields.
+								Resources: corev1.ResourceRequirements{},
+							},
+						},
 					},
 				},
-				TServer: v1alpha1.ServerSpec{
-					Replicas: int32(3),
-					Network: v1alpha1.NetworkSpec{
-						Ports: []v1alpha1.PortSpec{{
-							Name: "cool-tserver-port",
-							Port: int32(7001),
-						}},
-					},
+				Network: v1alpha1.NetworkSpec{
+					Ports: []v1alpha1.PortSpec{{
+						Name: "cool--port",
+						Port: int32(7001),
+					}},
 				},
+				Secure:              false,
+				CachePercent:        80,
+				MaxSQLMemoryPercent: 80,
 			},
 		},
 	}
@@ -118,39 +112,49 @@ func yugabyteCluster(im ...yugabyteClusterModifier) *v1alpha1.YugabyteCluster {
 	return i
 }
 
-type rookYugabyteClusterModifier func(*rookv1alpha1.YBCluster)
+type rookCockroachClusterModifier func(*rookv1alpha1.Cluster)
 
-func withMasterReplicas(i int32) rookYugabyteClusterModifier {
-	return func(c *rookv1alpha1.YBCluster) { c.Spec.Master.Replicas = i }
+func withNodeCount(i int) rookCockroachClusterModifier {
+	return func(c *rookv1alpha1.Cluster) { c.Spec.Storage.NodeCount = i }
 }
 
-func rookYugabyteCluster(im ...rookYugabyteClusterModifier) *rookv1alpha1.YBCluster {
-	i := &rookv1alpha1.YBCluster{
+func rookCockroachCluster(im ...rookCockroachClusterModifier) *rookv1alpha1.Cluster {
+	i := &rookv1alpha1.Cluster{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace:  namespace,
 			Name:       name,
 			UID:        uid,
 			Finalizers: []string{},
 		},
-		Spec: rookv1alpha1.YBClusterSpec{
-			Master: rookv1alpha1.ServerSpec{
-				Replicas: int32(3),
-				Network: rookv1alpha1.NetworkSpec{
-					Ports: []rookv1alpha1.PortSpec{{
-						Name: "cool-master-port",
-						Port: int32(7000),
-					}},
+		Spec: rookv1alpha1.ClusterSpec{
+			Annotations: rook.Annotations(map[string]string{"label": "value"}),
+			Storage: rook.StorageScopeSpec{
+				NodeCount: 3,
+				Selection: rook.Selection{
+					VolumeClaimTemplates: []corev1.PersistentVolumeClaim{
+						{
+							ObjectMeta: metav1.ObjectMeta{
+								Name: "rook-cockroachdb-test",
+							},
+							Spec: corev1.PersistentVolumeClaimSpec{
+								AccessModes: []corev1.PersistentVolumeAccessMode{"ReadWriteOnce"},
+								// Test does not check resource requirements due cmp pkg
+								// inability to compare unexported fields.
+								Resources: corev1.ResourceRequirements{},
+							},
+						},
+					},
 				},
 			},
-			TServer: rookv1alpha1.ServerSpec{
-				Replicas: int32(3),
-				Network: rookv1alpha1.NetworkSpec{
-					Ports: []rookv1alpha1.PortSpec{{
-						Name: "cool-tserver-port",
-						Port: int32(7001),
-					}},
-				},
+			Network: rookv1alpha1.NetworkSpec{
+				Ports: []rookv1alpha1.PortSpec{{
+					Name: "cool--port",
+					Port: int32(7001),
+				}},
 			},
+			Secure:              false,
+			CachePercent:        80,
+			MaxSQLMemoryPercent: 80,
 		},
 	}
 
@@ -161,10 +165,10 @@ func rookYugabyteCluster(im ...rookYugabyteClusterModifier) *rookv1alpha1.YBClus
 	return i
 }
 
-var _ resource.ExternalClient = &yugabyteExternal{}
-var _ resource.ExternalConnecter = &yugabyteConnecter{}
+var _ resource.ExternalClient = &cockroachExternal{}
+var _ resource.ExternalConnecter = &cockroachConnecter{}
 
-func TestConnectYugabyte(t *testing.T) {
+func TestConnectCockroach(t *testing.T) {
 	provider := kubev1alpha1.Provider{
 		ObjectMeta: metav1.ObjectMeta{Namespace: namespace, Name: providerName},
 		Spec: kubev1alpha1.ProviderSpec{
@@ -179,7 +183,7 @@ func TestConnectYugabyte(t *testing.T) {
 		Data:       map[string][]byte{providerSecretKey: []byte(providerSecretData)},
 	}
 
-	type yugabyteStrange struct {
+	type cockroachStrange struct {
 		resource.Managed
 	}
 
@@ -197,7 +201,7 @@ func TestConnectYugabyte(t *testing.T) {
 		want want
 	}{
 		"Connected": {
-			conn: &yugabyteConnecter{
+			conn: &cockroachConnecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					switch key {
 					case client.ObjectKey{Namespace: namespace, Name: providerName}:
@@ -211,28 +215,28 @@ func TestConnectYugabyte(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				mg:  yugabyteCluster(),
+				mg:  cockroachCluster(),
 			},
 			want: want{
 				err: nil,
 			},
 		},
-		"NotYugabyteCluster": {
-			conn: &yugabyteConnecter{},
-			args: args{ctx: context.Background(), mg: &yugabyteStrange{}},
-			want: want{err: errors.New(errNotYugabyteCluster)},
+		"NotCockroachCluster": {
+			conn: &cockroachConnecter{},
+			args: args{ctx: context.Background(), mg: &cockroachStrange{}},
+			want: want{err: errors.New(errNotCockroachCluster)},
 		},
 		"FailedToGetProvider": {
-			conn: &yugabyteConnecter{
+			conn: &cockroachConnecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					return errorBoom
 				}},
 			},
-			args: args{ctx: context.Background(), mg: yugabyteCluster()},
-			want: want{err: errors.Wrap(errorBoom, errGetYugabyteProvider)},
+			args: args{ctx: context.Background(), mg: cockroachCluster()},
+			want: want{err: errors.Wrap(errorBoom, errGetCockroachProvider)},
 		},
 		"FailedToGetProviderSecret": {
-			conn: &yugabyteConnecter{
+			conn: &cockroachConnecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					switch key {
 					case client.ObjectKey{Namespace: namespace, Name: providerName}:
@@ -243,11 +247,11 @@ func TestConnectYugabyte(t *testing.T) {
 					return nil
 				}},
 			},
-			args: args{ctx: context.Background(), mg: yugabyteCluster()},
-			want: want{err: errors.Wrap(errorBoom, errGetYugabyteProviderSecret)},
+			args: args{ctx: context.Background(), mg: cockroachCluster()},
+			want: want{err: errors.Wrap(errorBoom, errGetCockroachProviderSecret)},
 		},
 		"FailedToCreateKubernetesClient": {
-			conn: &yugabyteConnecter{
+			conn: &cockroachConnecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					switch key {
 					case client.ObjectKey{Namespace: namespace, Name: providerName}:
@@ -259,8 +263,8 @@ func TestConnectYugabyte(t *testing.T) {
 				}},
 				newClient: func(_ context.Context, _ *corev1.Secret) (client.Client, error) { return nil, errorBoom },
 			},
-			args: args{ctx: context.Background(), mg: yugabyteCluster()},
-			want: want{err: errors.Wrap(errorBoom, errNewYugabyteClient)},
+			args: args{ctx: context.Background(), mg: cockroachCluster()},
+			want: want{err: errors.Wrap(errorBoom, errNewCockroachClient)},
 		},
 	}
 
@@ -275,7 +279,7 @@ func TestConnectYugabyte(t *testing.T) {
 	}
 }
 
-func TestObserveYugabyte(t *testing.T) {
+func TestObserveCockroach(t *testing.T) {
 	type args struct {
 		ctx context.Context
 		mg  resource.Managed
@@ -292,10 +296,10 @@ func TestObserveYugabyte(t *testing.T) {
 		want   want
 	}{
 		"ObservedClusterAvailable": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &cockroachExternal{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
-						*obj.(*rookv1alpha1.YBCluster) = rookv1alpha1.YBCluster{
+						*obj.(*rookv1alpha1.Cluster) = rookv1alpha1.Cluster{
 							ObjectMeta: metav1.ObjectMeta{
 								Name:      name,
 								Namespace: namespace,
@@ -307,12 +311,12 @@ func TestObserveYugabyte(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				mg:  yugabyteCluster(),
+				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg: yugabyteCluster(
-					yugabyteWithConditions(runtimev1alpha1.Available()),
-					yugabyteWithBindingPhase(runtimev1alpha1.BindingPhaseUnbound)),
+				mg: cockroachCluster(
+					withConditions(runtimev1alpha1.Available()),
+					withBindingPhase(runtimev1alpha1.BindingPhaseUnbound)),
 				observation: resource.ExternalObservation{
 					ResourceExists:    true,
 					ConnectionDetails: resource.ConnectionDetails{},
@@ -320,29 +324,29 @@ func TestObserveYugabyte(t *testing.T) {
 			},
 		},
 		"ObservedClusterDoesNotExist": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &cockroachExternal{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
-					return errorYugabyteNotFound
+					return errorCockroachNotFound
 				}},
 			},
 			args: args{
 				ctx: context.Background(),
-				mg:  yugabyteCluster(),
+				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg:          yugabyteCluster(),
+				mg:          cockroachCluster(),
 				observation: resource.ExternalObservation{ResourceExists: false},
 			},
 		},
-		"NotYugabyteCluster": {
-			client: &yugabyteExternal{},
+		"NotCockroachCluster": {
+			client: &cockroachExternal{},
 			args: args{
 				ctx: context.Background(),
-				mg:  &yugabyteStrange{},
+				mg:  &cockroachStrange{},
 			},
 			want: want{
-				mg:  &yugabyteStrange{},
-				err: errors.New(errNotYugabyteCluster),
+				mg:  &cockroachStrange{},
+				err: errors.New(errNotCockroachCluster),
 			},
 		},
 	}
@@ -366,7 +370,7 @@ func TestObserveYugabyte(t *testing.T) {
 	}
 }
 
-func TestCreateYugabyte(t *testing.T) {
+func TestCreateCockroach(t *testing.T) {
 	type args struct {
 		ctx context.Context
 		mg  resource.Managed
@@ -383,43 +387,43 @@ func TestCreateYugabyte(t *testing.T) {
 		want   want
 	}{
 		"CreatedCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &cockroachExternal{client: &test.MockClient{
 				MockCreate: func(_ context.Context, obj runtime.Object, _ ...client.CreateOption) error {
 					return nil
 				}},
 			},
 			args: args{
 				ctx: context.Background(),
-				mg:  yugabyteCluster(),
+				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg: yugabyteCluster(yugabyteWithConditions(runtimev1alpha1.Creating())),
+				mg: cockroachCluster(withConditions(runtimev1alpha1.Creating())),
 			},
 		},
-		"NotYugabyteCluster": {
-			client: &yugabyteExternal{},
+		"NotCockroachCluster": {
+			client: &cockroachExternal{},
 			args: args{
 				ctx: context.Background(),
-				mg:  &yugabyteStrange{},
+				mg:  &cockroachStrange{},
 			},
 			want: want{
-				mg:  &yugabyteStrange{},
-				err: errors.New(errNotYugabyteCluster),
+				mg:  &cockroachStrange{},
+				err: errors.New(errNotCockroachCluster),
 			},
 		},
 		"FailedToCreateCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &cockroachExternal{client: &test.MockClient{
 				MockCreate: func(_ context.Context, obj runtime.Object, _ ...client.CreateOption) error {
 					return errorBoom
 				}},
 			},
 			args: args{
 				ctx: context.Background(),
-				mg:  yugabyteCluster(),
+				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg:  yugabyteCluster(yugabyteWithConditions(runtimev1alpha1.Creating())),
-				err: errors.Wrap(errorBoom, errCreateYugabyteCluster),
+				mg:  cockroachCluster(withConditions(runtimev1alpha1.Creating())),
+				err: errors.Wrap(errorBoom, errCreateCockroachCluster),
 			},
 		},
 	}
@@ -443,7 +447,7 @@ func TestCreateYugabyte(t *testing.T) {
 	}
 }
 
-func TestUpdateYugabyte(t *testing.T) {
+func TestUpdateCockroach(t *testing.T) {
 	type args struct {
 		ctx context.Context
 		mg  resource.Managed
@@ -460,10 +464,10 @@ func TestUpdateYugabyte(t *testing.T) {
 		want   want
 	}{
 		"UpdatedCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &cockroachExternal{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
-						*obj.(*rookv1alpha1.YBCluster) = *rookYugabyteCluster(withMasterReplicas(int32(4)))
+						*obj.(*rookv1alpha1.Cluster) = *rookCockroachCluster(withNodeCount(4))
 					}
 					return nil
 				},
@@ -473,60 +477,60 @@ func TestUpdateYugabyte(t *testing.T) {
 			}},
 			args: args{
 				ctx: context.Background(),
-				mg:  yugabyteCluster(),
+				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg: yugabyteCluster(),
+				mg: cockroachCluster(),
 			},
 		},
 		"UpdatedNotRequired": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &cockroachExternal{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
-						*obj.(*rookv1alpha1.YBCluster) = *rookYugabyteCluster()
+						*obj.(*rookv1alpha1.Cluster) = *rookCockroachCluster()
 					}
 					return nil
 				},
 			}},
 			args: args{
 				ctx: context.Background(),
-				mg:  yugabyteCluster(),
+				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg: yugabyteCluster(),
+				mg: cockroachCluster(),
 			},
 		},
-		"NotYugabyteCluster": {
-			client: &yugabyteExternal{},
+		"NotCockroachCluster": {
+			client: &cockroachExternal{},
 			args: args{
 				ctx: context.Background(),
-				mg:  &yugabyteStrange{},
+				mg:  &cockroachStrange{},
 			},
 			want: want{
-				mg:  &yugabyteStrange{},
-				err: errors.New(errNotYugabyteCluster),
+				mg:  &cockroachStrange{},
+				err: errors.New(errNotCockroachCluster),
 			},
 		},
 		"FailedToGetCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &cockroachExternal{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					return errorBoom
 				}},
 			},
 			args: args{
 				ctx: context.Background(),
-				mg:  yugabyteCluster(),
+				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg:  yugabyteCluster(),
-				err: errors.Wrap(errorBoom, errGetYugabyteCluster),
+				mg:  cockroachCluster(),
+				err: errors.Wrap(errorBoom, errGetCockroachCluster),
 			},
 		},
 		"FailedToUpdateCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &cockroachExternal{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
-						*obj.(*rookv1alpha1.YBCluster) = *rookYugabyteCluster(withMasterReplicas(int32(4)))
+						*obj.(*rookv1alpha1.Cluster) = *rookCockroachCluster(withNodeCount(4))
 					}
 					return nil
 				},
@@ -537,11 +541,11 @@ func TestUpdateYugabyte(t *testing.T) {
 
 			args: args{
 				ctx: context.Background(),
-				mg:  yugabyteCluster(),
+				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg:  yugabyteCluster(),
-				err: errors.Wrap(errorBoom, errUpdateYugabyteCluster),
+				mg:  cockroachCluster(),
+				err: errors.Wrap(errorBoom, errUpdateCockroachCluster),
 			},
 		},
 	}
@@ -565,7 +569,7 @@ func TestUpdateYugabyte(t *testing.T) {
 	}
 }
 
-func TestDeleteYugabyte(t *testing.T) {
+func TestDeleteCockroach(t *testing.T) {
 	type args struct {
 		ctx context.Context
 		mg  resource.Managed
@@ -581,10 +585,10 @@ func TestDeleteYugabyte(t *testing.T) {
 		want   want
 	}{
 		"DeletedCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &cockroachExternal{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
-						*obj.(*rookv1alpha1.YBCluster) = *rookYugabyteCluster()
+						*obj.(*rookv1alpha1.Cluster) = *rookCockroachCluster()
 					}
 					return nil
 				},
@@ -594,28 +598,28 @@ func TestDeleteYugabyte(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				mg:  yugabyteCluster(),
+				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg: yugabyteCluster(yugabyteWithConditions(runtimev1alpha1.Deleting())),
+				mg: cockroachCluster(withConditions(runtimev1alpha1.Deleting())),
 			},
 		},
-		"NotYugabyteCluster": {
-			client: &yugabyteExternal{},
+		"NotCockroachCluster": {
+			client: &cockroachExternal{},
 			args: args{
 				ctx: context.Background(),
-				mg:  &yugabyteStrange{},
+				mg:  &cockroachStrange{},
 			},
 			want: want{
-				mg:  &yugabyteStrange{},
-				err: errors.New(errNotYugabyteCluster),
+				mg:  &cockroachStrange{},
+				err: errors.New(errNotCockroachCluster),
 			},
 		},
 		"FailedToDeleteCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &cockroachExternal{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
-						*obj.(*rookv1alpha1.YBCluster) = *rookYugabyteCluster()
+						*obj.(*rookv1alpha1.Cluster) = *rookCockroachCluster()
 					}
 					return nil
 				},
@@ -626,11 +630,11 @@ func TestDeleteYugabyte(t *testing.T) {
 
 			args: args{
 				ctx: context.Background(),
-				mg:  yugabyteCluster(),
+				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg:  yugabyteCluster(yugabyteWithConditions(runtimev1alpha1.Deleting())),
-				err: errors.Wrap(errorBoom, errDeleteYugabyteCluster),
+				mg:  cockroachCluster(withConditions(runtimev1alpha1.Deleting())),
+				err: errors.Wrap(errorBoom, errDeleteCockroachCluster),
 			},
 		},
 	}

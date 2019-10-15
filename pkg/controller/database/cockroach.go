@@ -118,8 +118,8 @@ func (e *cockroachExternal) Observe(ctx context.Context, mg resource.Managed) (r
 		return resource.ExternalObservation{}, errors.Wrap(err, errGetCockroachCluster)
 	}
 
-	// If we are able to get the resource YBCluster instance, we will consider
-	// it available. If a status is added to the YBCluster CRD in the future we
+	// If we are able to get the resource Cluster instance, we will consider
+	// it available. If a status is added to the Cluster CRD in the future we
 	// should check it to set conditions.
 	c.Status.SetConditions(runtimev1alpha1.Available())
 	resource.SetBindable(c)

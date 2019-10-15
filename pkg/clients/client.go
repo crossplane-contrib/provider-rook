@@ -22,9 +22,7 @@ import (
 
 	runtimev1alpha1 "github.com/crossplaneio/crossplane-runtime/apis/core/v1alpha1"
 	"github.com/pkg/errors"
-	rookv1alpha1 "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -55,9 +53,6 @@ func NewClient(ctx context.Context, s *corev1.Secret, scheme *runtime.Scheme) (c
 		BearerToken: string(s.Data[runtimev1alpha1.ResourceCredentialsTokenKey]),
 	}
 
-	metav1.AddToGroupVersion(scheme, rookv1alpha1.SchemeGroupVersion)
-
-	// TODO(hasheddan): client options?
 	kc, err := client.New(config, client.Options{Scheme: scheme})
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot create Kubernetes client")

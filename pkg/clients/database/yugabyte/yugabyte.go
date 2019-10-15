@@ -40,6 +40,8 @@ func NewClient(ctx context.Context, s *corev1.Secret) (client.Client, error) {
 		&rookv1alpha1.YBClusterList{},
 	)
 
+	metav1.AddToGroupVersion(scheme, rookv1alpha1.SchemeGroupVersion)
+
 	return clients.NewClient(ctx, s, scheme)
 }
 

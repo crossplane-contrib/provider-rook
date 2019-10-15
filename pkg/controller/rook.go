@@ -25,9 +25,8 @@ import (
 // Controllers passes down config and adds individual controllers to the manager.
 type Controllers struct{}
 
-// SetupWithManager adds all GCP controllers to the manager.
+// SetupWithManager adds all Rook controllers to the manager.
 func (c *Controllers) SetupWithManager(mgr ctrl.Manager) error {
-	// TODO(muvaf): Move this interface and logic to controller-runtime as it's common to all.
 	controllers := []interface {
 		SetupWithManager(ctrl.Manager) error
 	}{
