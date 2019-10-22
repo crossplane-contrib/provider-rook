@@ -1,0 +1,32 @@
+apiVersion: database.rook.crossplane.io/v1alpha1
+kind: CockroachCluster
+metadata:
+  name: test-cluster
+  namespace: rook-infra-dev
+spec:
+  providerRef:
+    name: demo-k8s-provider
+    namespace: rook-infra-dev
+  reclaimPolicy: Delete
+  forProvider:
+    name: my-test-cockroach
+    namespace: rook-cockroachdb
+    scope:
+      nodeCount: 3
+      volumeClaimTemplates:
+      - metadata:
+          name: rook-cockroachdb-data
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          resources:
+            requests:
+              storage: "1Gi"
+    network:
+      ports:
+      - name: http
+        port: 8080
+      - name: grpc
+        port: 26257
+    secure: false
+    cachePercent: 25
+    maxSQLMemoryPercent: 25
