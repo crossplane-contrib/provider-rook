@@ -32,6 +32,7 @@ GO_TEST_PARALLEL := $(shell echo $$(( $(NPROCS) / 2 )))
 GO_STATIC_PACKAGES = $(GO_PROJECT)/cmd/stack
 GO_LDFLAGS += -X $(GO_PROJECT)/pkg/version.Version=$(VERSION)
 GO_SUBDIRS += cmd pkg apis
+GO111MODULE = on
 -include build/makelib/golang.mk
 
 # ====================================================================================
@@ -75,13 +76,6 @@ fallthrough: submodules
 
 go.test.unit: $(KUBEBUILDER)
 
-# Generate manifests e.g. CRD, RBAC etc.
-manifests: vendor
-	@$(INFO) Generating CRD manifests
-	@rm -rf $(CRD_DIR)
-	go run vendor/sigs.k8s.io/controller-tools/cmd/controller-gen/main.go crd:trivialVersions=true paths=./apis/... output:dir=$(CRD_DIR)
-	@$(OK) Generating CRD manifests
-
 # Generate a coverage report for cobertura applying exclusions on
 # - generated file
 cobertura:
@@ -90,7 +84,7 @@ cobertura:
 		$(GOCOVER_COBERTURA) > $(GO_TEST_OUTPUT)/cobertura-coverage.xml
 
 # Ensure a PR is ready for review.
-reviewable: vendor generate manifests lint
+reviewable: generate manifests lint
 
 # integration tests
 e2e.run: test-integration
@@ -153,7 +147,6 @@ clean-stack-package:
 
 define CROSSPLANE_MAKE_HELP
 Crossplane Targets:
-    manifests             Generate manifests e.g. CRD, RBAC etc.
     cobertura             Generate a coverage report for cobertura applying exclusions on generated files.
     reviewable            Ensure a PR is ready for review.
     submodules            Update the submodules, such as the common build scripts.
@@ -172,3 +165,17 @@ crossplane.help:
 help-special: crossplane.help
 
 .PHONY: crossplane.help help-special
+
+# target for resolving angryjet dependency
+# TODO(soorena776): move this to golang.mk in build submodule
+CROSSPLANETOOLS_ANGRYJET := $(TOOLS_HOST_DIR)/angryjet
+export CROSSPLANETOOLS_ANGRYJET
+
+$(CROSSPLANETOOLS_ANGRYJET):
+	@$(INFO) installing Crossplane AngryJet
+	@mkdir -p $(TOOLS_HOST_DIR)/tmp-angryjet || $(FAIL)
+	@GO111MODULE=off GOPATH=$(TOOLS_HOST_DIR)/tmp-angryjet GOBIN=$(TOOLS_HOST_DIR) $(GOHOST) get github.com/crossplaneio/crossplane-tools/cmd/angryjet || rm -fr $(TOOLS_HOST_DIR)/tmp-angryjet|| $(FAIL)
+	@rm -fr $(TOOLS_HOST_DIR)/tmp-angryjet
+	@$(OK) installing Crossplane AngryJet
+
+go.generate: $(CROSSPLANETOOLS_ANGRYJET)
