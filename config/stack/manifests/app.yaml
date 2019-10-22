@@ -52,6 +52,7 @@ dependsOn:
 - crd: '*.cache.crossplane.io/v1alpha1'
 - crd: '*.compute.crossplane.io/v1alpha1'
 - crd: '*.database.crossplane.io/v1alpha1'
+- crd: '*.kubernetes.crossplane.io/v1alpha1'
 - crd: '*.core.crossplane.io/v1alpha1'
 - crd: '*.storage.crossplane.io/v1alpha1'
 - crd: '*.workload.crossplane.io/v1alpha1'
