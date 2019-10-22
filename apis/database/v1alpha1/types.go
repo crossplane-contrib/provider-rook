@@ -72,6 +72,7 @@ type YugabyteClusterStatus struct {
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:printcolumn:name="SECRET-NAME",type="string",JSONPath=".spec.credentialsSecretRef.name",priority=1
+// +kubebuilder:resource:scope=Cluster
 type YugabyteCluster struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -92,18 +93,18 @@ type YugabyteClusterList struct {
 // A YugabyteClusterClassSpecTemplate is a template for the spec of a dynamically
 // provisioned YugabyteCluster.
 type YugabyteClusterClassSpecTemplate struct {
-	runtimev1alpha1.NonPortableClassSpecTemplate `json:",inline"`
-	YugabyteClusterParameters                    `json:"forProvider"`
+	runtimev1alpha1.ClassSpecTemplate `json:",inline"`
+	YugabyteClusterParameters         `json:"forProvider"`
 }
 
 // +kubebuilder:object:root=true
 
-// A YugabyteClusterClass is a non-portable resource class. It defines the desired
-// spec of resource claims that use it to dynamically provision a managed
-// resource.
+// A YugabyteClusterClass is a resource class. It defines the desired spec of
+// resource claims that use it to dynamically provision a managed resource.
 // +kubebuilder:printcolumn:name="PROVIDER-REF",type="string",JSONPath=".specTemplate.providerRef.name"
 // +kubebuilder:printcolumn:name="RECLAIM-POLICY",type="string",JSONPath=".specTemplate.reclaimPolicy"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
+// +kubebuilder:resource:scope=Cluster
 type YugabyteClusterClass struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -152,6 +153,7 @@ type CockroachClusterStatus struct {
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:printcolumn:name="SECRET-NAME",type="string",JSONPath=".spec.credentialsSecretRef.name",priority=1
+// +kubebuilder:resource:scope=Cluster
 type CockroachCluster struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -172,18 +174,18 @@ type CockroachClusterList struct {
 // A CockroachClusterClassSpecTemplate is a template for the spec of a dynamically
 // provisioned CockroachCluster.
 type CockroachClusterClassSpecTemplate struct {
-	runtimev1alpha1.NonPortableClassSpecTemplate `json:",inline"`
-	CockroachClusterParameters                   `json:"forProvider"`
+	runtimev1alpha1.ClassSpecTemplate `json:",inline"`
+	CockroachClusterParameters        `json:"forProvider"`
 }
 
 // +kubebuilder:object:root=true
 
-// A CockroachClusterClass is a non-portable resource class. It defines the desired
-// spec of resource claims that use it to dynamically provision a managed
-// resource.
+// A CockroachClusterClass is a resource class. It defines the desired spec of
+// resource claims that use it to dynamically provision a managed resource.
 // +kubebuilder:printcolumn:name="PROVIDER-REF",type="string",JSONPath=".specTemplate.providerRef.name"
 // +kubebuilder:printcolumn:name="RECLAIM-POLICY",type="string",JSONPath=".specTemplate.reclaimPolicy"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
+// +kubebuilder:resource:scope=Cluster
 type CockroachClusterClass struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

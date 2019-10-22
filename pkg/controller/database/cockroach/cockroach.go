@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package database
+package cockroach
 
 import (
 	"context"
@@ -50,28 +50,28 @@ const (
 	errDeleteCockroachCluster     = "cannot delete Cockroach cluster in target Kubernetes cluster"
 )
 
-// CockroachClusterController is responsible for adding the CockroachCluster
+// Controller is responsible for adding the CockroachCluster
 // controller and its corresponding reconciler to the manager with any runtime configuration.
-type CockroachClusterController struct{}
+type Controller struct{}
 
 // SetupWithManager creates a new CockroachCluster Controller and adds it to the
 // Manager with default RBAC. The Manager will set fields on the Controller and
 // start it when the Manager is Started.
-func (c *CockroachClusterController) SetupWithManager(mgr ctrl.Manager) error {
+func (c *Controller) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(strings.ToLower(fmt.Sprintf("%s.%s", v1alpha1.CockroachClusterKind, v1alpha1.Group))).
 		For(&v1alpha1.CockroachCluster{}).
 		Complete(resource.NewManagedReconciler(mgr,
 			resource.ManagedKind(v1alpha1.CockroachClusterGroupVersionKind),
-			resource.WithExternalConnecter(&cockroachConnecter{client: mgr.GetClient(), newClient: cockroach.NewClient})))
+			resource.WithExternalConnecter(&connecter{client: mgr.GetClient(), newClient: cockroach.NewClient})))
 }
 
-type cockroachConnecter struct {
+type connecter struct {
 	client    client.Client
 	newClient func(ctx context.Context, secret *corev1.Secret) (client.Client, error)
 }
 
-func (c *cockroachConnecter) Connect(ctx context.Context, mg resource.Managed) (resource.ExternalClient, error) {
+func (c *connecter) Connect(ctx context.Context, mg resource.Managed) (resource.ExternalClient, error) {
 	i, ok := mg.(*v1alpha1.CockroachCluster)
 	if !ok {
 		return nil, errors.New(errNotCockroachCluster)
@@ -90,14 +90,14 @@ func (c *cockroachConnecter) Connect(ctx context.Context, mg resource.Managed) (
 	}
 
 	client, err := c.newClient(ctx, s)
-	return &cockroachExternal{client: client}, errors.Wrap(err, errNewCockroachClient)
+	return &external{client: client}, errors.Wrap(err, errNewCockroachClient)
 }
 
-type cockroachExternal struct {
+type external struct {
 	client client.Client
 }
 
-func (e *cockroachExternal) Observe(ctx context.Context, mg resource.Managed) (resource.ExternalObservation, error) {
+func (e *external) Observe(ctx context.Context, mg resource.Managed) (resource.ExternalObservation, error) {
 	c, ok := mg.(*v1alpha1.CockroachCluster)
 	if !ok {
 		return resource.ExternalObservation{}, errors.New(errNotCockroachCluster)
@@ -133,7 +133,7 @@ func (e *cockroachExternal) Observe(ctx context.Context, mg resource.Managed) (r
 
 }
 
-func (e *cockroachExternal) Create(ctx context.Context, mg resource.Managed) (resource.ExternalCreation, error) {
+func (e *external) Create(ctx context.Context, mg resource.Managed) (resource.ExternalCreation, error) {
 	c, ok := mg.(*v1alpha1.CockroachCluster)
 	if !ok {
 		return resource.ExternalCreation{}, errors.New(errNotCockroachCluster)
@@ -145,7 +145,7 @@ func (e *cockroachExternal) Create(ctx context.Context, mg resource.Managed) (re
 	return resource.ExternalCreation{}, errors.Wrap(err, errCreateCockroachCluster)
 }
 
-func (e *cockroachExternal) Update(ctx context.Context, mg resource.Managed) (resource.ExternalUpdate, error) {
+func (e *external) Update(ctx context.Context, mg resource.Managed) (resource.ExternalUpdate, error) {
 	c, ok := mg.(*v1alpha1.CockroachCluster)
 	if !ok {
 		return resource.ExternalUpdate{}, errors.New(errNotCockroachCluster)
@@ -172,7 +172,7 @@ func (e *cockroachExternal) Update(ctx context.Context, mg resource.Managed) (re
 	return resource.ExternalUpdate{}, errors.Wrap(err, errUpdateCockroachCluster)
 }
 
-func (e *cockroachExternal) Delete(ctx context.Context, mg resource.Managed) error {
+func (e *external) Delete(ctx context.Context, mg resource.Managed) error {
 	c, ok := mg.(*v1alpha1.CockroachCluster)
 	if !ok {
 		return errors.New(errNotCockroachCluster)

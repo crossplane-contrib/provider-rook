@@ -19,7 +19,8 @@ package controller
 import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	"github.com/crossplaneio/stack-rook/pkg/controller/database"
+	"github.com/crossplaneio/stack-rook/pkg/controller/database/cockroach"
+	"github.com/crossplaneio/stack-rook/pkg/controller/database/yugabyte"
 )
 
 // Controllers passes down config and adds individual controllers to the manager.
@@ -30,10 +31,14 @@ func (c *Controllers) SetupWithManager(mgr ctrl.Manager) error {
 	controllers := []interface {
 		SetupWithManager(ctrl.Manager) error
 	}{
-		&database.PostgreSQLInstanceYugabyteClaimController{},
-		&database.YugabyteClusterController{},
-		&database.PostgreSQLInstanceCockroachClaimController{},
-		&database.CockroachClusterController{},
+		&cockroach.ClaimController{},
+		&cockroach.ClaimDefaultingController{},
+		&cockroach.ClaimSchedulingController{},
+		&cockroach.Controller{},
+		&yugabyte.ClaimController{},
+		&yugabyte.ClaimDefaultingController{},
+		&yugabyte.ClaimSchedulingController{},
+		&yugabyte.Controller{},
 	}
 	for _, c := range controllers {
 		if err := c.SetupWithManager(mgr); err != nil {

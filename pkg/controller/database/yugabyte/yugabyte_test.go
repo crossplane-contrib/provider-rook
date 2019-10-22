@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package database
+package yugabyte
 
 import (
 	"context"
@@ -84,7 +84,7 @@ func yugabyteCluster(im ...yugabyteClusterModifier) *v1alpha1.YugabyteCluster {
 		Spec: v1alpha1.YugabyteClusterSpec{
 			ResourceSpec: runtimev1alpha1.ResourceSpec{
 				ProviderReference:                &corev1.ObjectReference{Namespace: namespace, Name: providerName},
-				WriteConnectionSecretToReference: corev1.LocalObjectReference{Name: connectionSecretName},
+				WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: connectionSecretName},
 			},
 			YugabyteClusterParameters: v1alpha1.YugabyteClusterParameters{
 				Name:      name,
@@ -161,15 +161,19 @@ func rookYugabyteCluster(im ...rookYugabyteClusterModifier) *rookv1alpha1.YBClus
 	return i
 }
 
-var _ resource.ExternalClient = &yugabyteExternal{}
-var _ resource.ExternalConnecter = &yugabyteConnecter{}
+var _ resource.ExternalClient = &external{}
+var _ resource.ExternalConnecter = &connecter{}
 
 func TestConnectYugabyte(t *testing.T) {
 	provider := kubev1alpha1.Provider{
 		ObjectMeta: metav1.ObjectMeta{Namespace: namespace, Name: providerName},
 		Spec: kubev1alpha1.ProviderSpec{
-			Secret: corev1.LocalObjectReference{
-				Name: providerSecretName,
+			Secret: runtimev1alpha1.SecretKeySelector{
+				SecretReference: runtimev1alpha1.SecretReference{
+					Name:      providerSecretName,
+					Namespace: providerSecretName + "space",
+				},
+				Key: "some-cool-key",
 			},
 		},
 	}
@@ -197,7 +201,7 @@ func TestConnectYugabyte(t *testing.T) {
 		want want
 	}{
 		"Connected": {
-			conn: &yugabyteConnecter{
+			conn: &connecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					switch key {
 					case client.ObjectKey{Namespace: namespace, Name: providerName}:
@@ -218,12 +222,12 @@ func TestConnectYugabyte(t *testing.T) {
 			},
 		},
 		"NotYugabyteCluster": {
-			conn: &yugabyteConnecter{},
+			conn: &connecter{},
 			args: args{ctx: context.Background(), mg: &yugabyteStrange{}},
 			want: want{err: errors.New(errNotYugabyteCluster)},
 		},
 		"FailedToGetProvider": {
-			conn: &yugabyteConnecter{
+			conn: &connecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					return errorBoom
 				}},
@@ -232,7 +236,7 @@ func TestConnectYugabyte(t *testing.T) {
 			want: want{err: errors.Wrap(errorBoom, errGetYugabyteProvider)},
 		},
 		"FailedToGetProviderSecret": {
-			conn: &yugabyteConnecter{
+			conn: &connecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					switch key {
 					case client.ObjectKey{Namespace: namespace, Name: providerName}:
@@ -247,7 +251,7 @@ func TestConnectYugabyte(t *testing.T) {
 			want: want{err: errors.Wrap(errorBoom, errGetYugabyteProviderSecret)},
 		},
 		"FailedToCreateKubernetesClient": {
-			conn: &yugabyteConnecter{
+			conn: &connecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					switch key {
 					case client.ObjectKey{Namespace: namespace, Name: providerName}:
@@ -292,7 +296,7 @@ func TestObserveYugabyte(t *testing.T) {
 		want   want
 	}{
 		"ObservedClusterAvailable": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
 						*obj.(*rookv1alpha1.YBCluster) = rookv1alpha1.YBCluster{
@@ -320,7 +324,7 @@ func TestObserveYugabyte(t *testing.T) {
 			},
 		},
 		"ObservedClusterDoesNotExist": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					return errorYugabyteNotFound
 				}},
@@ -335,7 +339,7 @@ func TestObserveYugabyte(t *testing.T) {
 			},
 		},
 		"NotYugabyteCluster": {
-			client: &yugabyteExternal{},
+			client: &external{},
 			args: args{
 				ctx: context.Background(),
 				mg:  &yugabyteStrange{},
@@ -383,7 +387,7 @@ func TestCreateYugabyte(t *testing.T) {
 		want   want
 	}{
 		"CreatedCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockCreate: func(_ context.Context, obj runtime.Object, _ ...client.CreateOption) error {
 					return nil
 				}},
@@ -397,7 +401,7 @@ func TestCreateYugabyte(t *testing.T) {
 			},
 		},
 		"NotYugabyteCluster": {
-			client: &yugabyteExternal{},
+			client: &external{},
 			args: args{
 				ctx: context.Background(),
 				mg:  &yugabyteStrange{},
@@ -408,7 +412,7 @@ func TestCreateYugabyte(t *testing.T) {
 			},
 		},
 		"FailedToCreateCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockCreate: func(_ context.Context, obj runtime.Object, _ ...client.CreateOption) error {
 					return errorBoom
 				}},
@@ -460,7 +464,7 @@ func TestUpdateYugabyte(t *testing.T) {
 		want   want
 	}{
 		"UpdatedCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
 						*obj.(*rookv1alpha1.YBCluster) = *rookYugabyteCluster(withMasterReplicas(int32(4)))
@@ -480,7 +484,7 @@ func TestUpdateYugabyte(t *testing.T) {
 			},
 		},
 		"UpdatedNotRequired": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
 						*obj.(*rookv1alpha1.YBCluster) = *rookYugabyteCluster()
@@ -497,7 +501,7 @@ func TestUpdateYugabyte(t *testing.T) {
 			},
 		},
 		"NotYugabyteCluster": {
-			client: &yugabyteExternal{},
+			client: &external{},
 			args: args{
 				ctx: context.Background(),
 				mg:  &yugabyteStrange{},
@@ -508,7 +512,7 @@ func TestUpdateYugabyte(t *testing.T) {
 			},
 		},
 		"FailedToGetCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					return errorBoom
 				}},
@@ -523,7 +527,7 @@ func TestUpdateYugabyte(t *testing.T) {
 			},
 		},
 		"FailedToUpdateCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
 						*obj.(*rookv1alpha1.YBCluster) = *rookYugabyteCluster(withMasterReplicas(int32(4)))
@@ -581,7 +585,7 @@ func TestDeleteYugabyte(t *testing.T) {
 		want   want
 	}{
 		"DeletedCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
 						*obj.(*rookv1alpha1.YBCluster) = *rookYugabyteCluster()
@@ -601,7 +605,7 @@ func TestDeleteYugabyte(t *testing.T) {
 			},
 		},
 		"NotYugabyteCluster": {
-			client: &yugabyteExternal{},
+			client: &external{},
 			args: args{
 				ctx: context.Background(),
 				mg:  &yugabyteStrange{},
@@ -612,7 +616,7 @@ func TestDeleteYugabyte(t *testing.T) {
 			},
 		},
 		"FailedToDeleteCluster": {
-			client: &yugabyteExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
 						*obj.(*rookv1alpha1.YBCluster) = *rookYugabyteCluster()

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package database
+package cockroach
 
 import (
 	"context"
@@ -33,12 +33,27 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/crossplaneio/stack-rook/apis/database/v1alpha1"
 	corev1alpha1 "github.com/crossplaneio/stack-rook/apis/v1alpha1"
 )
 
+const (
+	name      = "cool-name"
+	namespace = "cool-namespace"
+	uid       = types.UID("definitely-a-uuid")
+
+	providerName       = "cool-rook"
+	providerSecretName = "cool-rook-secret"
+	providerSecretKey  = "credentials.json"
+	providerSecretData = "definitelyjson"
+
+	connectionSecretName = "cool-connection-secret"
+)
+
+var errorBoom = errors.New("boom")
 var errorCockroachNotFound = kerrors.NewNotFound(
 	schema.GroupResource{
 		Group:    "cockroachdb.rook.io",
@@ -70,7 +85,7 @@ func cockroachCluster(im ...cockroachClusterModifier) *v1alpha1.CockroachCluster
 		Spec: v1alpha1.CockroachClusterSpec{
 			ResourceSpec: runtimev1alpha1.ResourceSpec{
 				ProviderReference:                &corev1.ObjectReference{Namespace: namespace, Name: providerName},
-				WriteConnectionSecretToReference: corev1.LocalObjectReference{Name: connectionSecretName},
+				WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: connectionSecretName},
 			},
 			CockroachClusterParameters: v1alpha1.CockroachClusterParameters{
 				Name:        name,
@@ -165,15 +180,19 @@ func rookCockroachCluster(im ...rookCockroachClusterModifier) *rookv1alpha1.Clus
 	return i
 }
 
-var _ resource.ExternalClient = &cockroachExternal{}
-var _ resource.ExternalConnecter = &cockroachConnecter{}
+var _ resource.ExternalClient = &external{}
+var _ resource.ExternalConnecter = &connecter{}
 
 func TestConnectCockroach(t *testing.T) {
 	provider := kubev1alpha1.Provider{
 		ObjectMeta: metav1.ObjectMeta{Namespace: namespace, Name: providerName},
 		Spec: kubev1alpha1.ProviderSpec{
-			Secret: corev1.LocalObjectReference{
-				Name: providerSecretName,
+			Secret: runtimev1alpha1.SecretKeySelector{
+				SecretReference: runtimev1alpha1.SecretReference{
+					Name:      providerSecretName,
+					Namespace: providerSecretName + "space",
+				},
+				Key: "some-cool-key",
 			},
 		},
 	}
@@ -201,7 +220,7 @@ func TestConnectCockroach(t *testing.T) {
 		want want
 	}{
 		"Connected": {
-			conn: &cockroachConnecter{
+			conn: &connecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					switch key {
 					case client.ObjectKey{Namespace: namespace, Name: providerName}:
@@ -222,12 +241,12 @@ func TestConnectCockroach(t *testing.T) {
 			},
 		},
 		"NotCockroachCluster": {
-			conn: &cockroachConnecter{},
+			conn: &connecter{},
 			args: args{ctx: context.Background(), mg: &cockroachStrange{}},
 			want: want{err: errors.New(errNotCockroachCluster)},
 		},
 		"FailedToGetProvider": {
-			conn: &cockroachConnecter{
+			conn: &connecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					return errorBoom
 				}},
@@ -236,7 +255,7 @@ func TestConnectCockroach(t *testing.T) {
 			want: want{err: errors.Wrap(errorBoom, errGetCockroachProvider)},
 		},
 		"FailedToGetProviderSecret": {
-			conn: &cockroachConnecter{
+			conn: &connecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					switch key {
 					case client.ObjectKey{Namespace: namespace, Name: providerName}:
@@ -251,7 +270,7 @@ func TestConnectCockroach(t *testing.T) {
 			want: want{err: errors.Wrap(errorBoom, errGetCockroachProviderSecret)},
 		},
 		"FailedToCreateKubernetesClient": {
-			conn: &cockroachConnecter{
+			conn: &connecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					switch key {
 					case client.ObjectKey{Namespace: namespace, Name: providerName}:
@@ -296,7 +315,7 @@ func TestObserveCockroach(t *testing.T) {
 		want   want
 	}{
 		"ObservedClusterAvailable": {
-			client: &cockroachExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
 						*obj.(*rookv1alpha1.Cluster) = rookv1alpha1.Cluster{
@@ -324,7 +343,7 @@ func TestObserveCockroach(t *testing.T) {
 			},
 		},
 		"ObservedClusterDoesNotExist": {
-			client: &cockroachExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					return errorCockroachNotFound
 				}},
@@ -339,7 +358,7 @@ func TestObserveCockroach(t *testing.T) {
 			},
 		},
 		"NotCockroachCluster": {
-			client: &cockroachExternal{},
+			client: &external{},
 			args: args{
 				ctx: context.Background(),
 				mg:  &cockroachStrange{},
@@ -387,7 +406,7 @@ func TestCreateCockroach(t *testing.T) {
 		want   want
 	}{
 		"CreatedCluster": {
-			client: &cockroachExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockCreate: func(_ context.Context, obj runtime.Object, _ ...client.CreateOption) error {
 					return nil
 				}},
@@ -401,7 +420,7 @@ func TestCreateCockroach(t *testing.T) {
 			},
 		},
 		"NotCockroachCluster": {
-			client: &cockroachExternal{},
+			client: &external{},
 			args: args{
 				ctx: context.Background(),
 				mg:  &cockroachStrange{},
@@ -412,7 +431,7 @@ func TestCreateCockroach(t *testing.T) {
 			},
 		},
 		"FailedToCreateCluster": {
-			client: &cockroachExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockCreate: func(_ context.Context, obj runtime.Object, _ ...client.CreateOption) error {
 					return errorBoom
 				}},
@@ -464,7 +483,7 @@ func TestUpdateCockroach(t *testing.T) {
 		want   want
 	}{
 		"UpdatedCluster": {
-			client: &cockroachExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
 						*obj.(*rookv1alpha1.Cluster) = *rookCockroachCluster(withNodeCount(4))
@@ -484,7 +503,7 @@ func TestUpdateCockroach(t *testing.T) {
 			},
 		},
 		"UpdatedNotRequired": {
-			client: &cockroachExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
 						*obj.(*rookv1alpha1.Cluster) = *rookCockroachCluster()
@@ -501,7 +520,7 @@ func TestUpdateCockroach(t *testing.T) {
 			},
 		},
 		"NotCockroachCluster": {
-			client: &cockroachExternal{},
+			client: &external{},
 			args: args{
 				ctx: context.Background(),
 				mg:  &cockroachStrange{},
@@ -512,7 +531,7 @@ func TestUpdateCockroach(t *testing.T) {
 			},
 		},
 		"FailedToGetCluster": {
-			client: &cockroachExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					return errorBoom
 				}},
@@ -527,7 +546,7 @@ func TestUpdateCockroach(t *testing.T) {
 			},
 		},
 		"FailedToUpdateCluster": {
-			client: &cockroachExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
 						*obj.(*rookv1alpha1.Cluster) = *rookCockroachCluster(withNodeCount(4))
@@ -585,7 +604,7 @@ func TestDeleteCockroach(t *testing.T) {
 		want   want
 	}{
 		"DeletedCluster": {
-			client: &cockroachExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
 						*obj.(*rookv1alpha1.Cluster) = *rookCockroachCluster()
@@ -605,7 +624,7 @@ func TestDeleteCockroach(t *testing.T) {
 			},
 		},
 		"NotCockroachCluster": {
-			client: &cockroachExternal{},
+			client: &external{},
 			args: args{
 				ctx: context.Background(),
 				mg:  &cockroachStrange{},
@@ -616,7 +635,7 @@ func TestDeleteCockroach(t *testing.T) {
 			},
 		},
 		"FailedToDeleteCluster": {
-			client: &cockroachExternal{client: &test.MockClient{
+			client: &external{client: &test.MockClient{
 				MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					if key == (client.ObjectKey{Namespace: namespace, Name: name}) {
 						*obj.(*rookv1alpha1.Cluster) = *rookCockroachCluster()

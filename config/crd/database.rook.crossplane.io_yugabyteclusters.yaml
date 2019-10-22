@@ -20,7 +20,7 @@ spec:
     listKind: YugabyteClusterList
     plural: yugabyteclusters
     singular: yugabytecluster
-  scope: ""
+  scope: Cluster
   subresources:
     status: {}
   validation:
@@ -30,12 +30,12 @@ spec:
         apiVersion:
           description: 'APIVersion defines the versioned schema of this representation
             of an object. Servers should convert recognized schemas to the latest
-            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
           type: string
         kind:
           description: 'Kind is a string value representing the REST resource this
             object represents. Servers may infer this from the endpoint the client
-            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
           type: string
         metadata:
           type: object
@@ -65,7 +65,7 @@ spec:
                     in the future.'
                   type: string
                 kind:
-                  description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
+                  description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
                   type: string
                 name:
                   description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -75,17 +75,16 @@ spec:
                   type: string
                 resourceVersion:
                   description: 'Specific resourceVersion to which this reference is
-                    made, if any. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency'
+                    made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency'
                   type: string
                 uid:
                   description: 'UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids'
                   type: string
               type: object
             classRef:
-              description: NonPortableClassReference specifies the non-portable resource
-                class that was used to dynamically provision this managed resource,
-                if any. Crossplane does not currently support setting this field manually,
-                per https://github.com/crossplaneio/crossplane-runtime/issues/20
+              description: ClassReference specifies the resource class that was used
+                to dynamically provision this managed resource, if any. Crossplane
+                does not currently support setting this field manually, per https://github.com/crossplaneio/crossplane-runtime/issues/20
               properties:
                 apiVersion:
                   description: API version of the referent.
@@ -104,7 +103,7 @@ spec:
                     in the future.'
                   type: string
                 kind:
-                  description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
+                  description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
                   type: string
                 name:
                   description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -114,7 +113,7 @@ spec:
                   type: string
                 resourceVersion:
                   description: 'Specific resourceVersion to which this reference is
-                    made, if any. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency'
+                    made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency'
                   type: string
                 uid:
                   description: 'UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids'
@@ -165,16 +164,16 @@ spec:
                           description: 'APIVersion defines the versioned schema of
                             this representation of an object. Servers should convert
                             recognized schemas to the latest internal value, and may
-                            reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
+                            reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
                           type: string
                         kind:
                           description: 'Kind is a string value representing the REST
                             resource this object represents. Servers may infer this
                             from the endpoint the client submits requests to. Cannot
-                            be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
+                            be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
                           type: string
                         metadata:
-                          description: 'Standard object''s metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata'
+                          description: 'Standard object''s metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata'
                           type: object
                         spec:
                           description: 'Spec defines the desired characteristics of
@@ -397,16 +396,16 @@ spec:
                           description: 'APIVersion defines the versioned schema of
                             this representation of an object. Servers should convert
                             recognized schemas to the latest internal value, and may
-                            reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
+                            reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
                           type: string
                         kind:
                           description: 'Kind is a string value representing the REST
                             resource this object represents. Servers may infer this
                             from the endpoint the client submits requests to. Cannot
-                            be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
+                            be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
                           type: string
                         metadata:
-                          description: 'Standard object''s metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata'
+                          description: 'Standard object''s metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata'
                           type: object
                         spec:
                           description: 'Spec defines the desired characteristics of
@@ -617,7 +616,7 @@ spec:
                     in the future.'
                   type: string
                 kind:
-                  description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
+                  description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
                   type: string
                 name:
                   description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -627,7 +626,7 @@ spec:
                   type: string
                 resourceVersion:
                   description: 'Specific resourceVersion to which this reference is
-                    made, if any. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#concurrency-control-and-consistency'
+                    made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency'
                   type: string
                 uid:
                   description: 'UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids'
@@ -642,16 +641,21 @@ spec:
                 per https://github.com/crossplaneio/crossplane-runtime/issues/21
               type: string
             writeConnectionSecretToRef:
-              description: WriteConnectionSecretToReference specifies the name of
-                a Secret, in the same namespace as this managed resource, to which
-                any connection details for this managed resource should be written.
-                Connection details frequently include the endpoint, username, and
-                password required to connect to the managed resource.
+              description: WriteConnectionSecretToReference specifies the namespace
+                and name of a Secret to which any connection details for this managed
+                resource should be written. Connection details frequently include
+                the endpoint, username, and password required to connect to the managed
+                resource.
               properties:
                 name:
-                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                    TODO: Add other useful fields. apiVersion, kind, uid?'
+                  description: Name of the secret.
                   type: string
+                namespace:
+                  description: Namespace of the secret.
+                  type: string
+              required:
+              - name
+              - namespace
               type: object
           required:
           - forProvider
