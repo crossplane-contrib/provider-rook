@@ -44,10 +44,11 @@ const (
 	namespace = "cool-namespace"
 	uid       = types.UID("definitely-a-uuid")
 
-	providerName       = "cool-rook"
-	providerSecretName = "cool-rook-secret"
-	providerSecretKey  = "credentials.json"
-	providerSecretData = "definitelyjson"
+	providerName            = "cool-rook"
+	providerSecretName      = "cool-rook-secret"
+	providerSecretNamespace = "cool-rook-secret-namespace"
+	providerSecretKey       = "credentials.json"
+	providerSecretData      = "definitelyjson"
 
 	connectionSecretName = "cool-connection-secret"
 )
@@ -76,14 +77,13 @@ func yugabyteWithBindingPhase(p runtimev1alpha1.BindingPhase) yugabyteClusterMod
 func yugabyteCluster(im ...yugabyteClusterModifier) *v1alpha1.YugabyteCluster {
 	i := &v1alpha1.YugabyteCluster{
 		ObjectMeta: metav1.ObjectMeta{
-			Namespace:  namespace,
 			Name:       name,
 			UID:        uid,
 			Finalizers: []string{},
 		},
 		Spec: v1alpha1.YugabyteClusterSpec{
 			ResourceSpec: runtimev1alpha1.ResourceSpec{
-				ProviderReference:                &corev1.ObjectReference{Namespace: namespace, Name: providerName},
+				ProviderReference:                &corev1.ObjectReference{Name: providerName},
 				WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: connectionSecretName},
 			},
 			YugabyteClusterParameters: v1alpha1.YugabyteClusterParameters{
@@ -166,20 +166,17 @@ var _ resource.ExternalConnecter = &connecter{}
 
 func TestConnectYugabyte(t *testing.T) {
 	provider := kubev1alpha1.Provider{
-		ObjectMeta: metav1.ObjectMeta{Namespace: namespace, Name: providerName},
+		ObjectMeta: metav1.ObjectMeta{Name: providerName},
 		Spec: kubev1alpha1.ProviderSpec{
-			Secret: runtimev1alpha1.SecretKeySelector{
-				SecretReference: runtimev1alpha1.SecretReference{
-					Name:      providerSecretName,
-					Namespace: providerSecretName + "space",
-				},
-				Key: "some-cool-key",
+			Secret: runtimev1alpha1.SecretReference{
+				Name:      providerSecretName,
+				Namespace: providerSecretNamespace,
 			},
 		},
 	}
 
 	secret := corev1.Secret{
-		ObjectMeta: metav1.ObjectMeta{Namespace: namespace, Name: providerSecretName},
+		ObjectMeta: metav1.ObjectMeta{Namespace: providerSecretNamespace, Name: providerSecretName},
 		Data:       map[string][]byte{providerSecretKey: []byte(providerSecretData)},
 	}
 
@@ -204,14 +201,14 @@ func TestConnectYugabyte(t *testing.T) {
 			conn: &connecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					switch key {
-					case client.ObjectKey{Namespace: namespace, Name: providerName}:
+					case client.ObjectKey{Name: providerName}:
 						*obj.(*kubev1alpha1.Provider) = provider
-					case client.ObjectKey{Namespace: namespace, Name: providerSecretName}:
+					case client.ObjectKey{Namespace: providerSecretNamespace, Name: providerSecretName}:
 						*obj.(*corev1.Secret) = secret
 					}
 					return nil
 				}},
-				newClient: func(_ context.Context, _ *corev1.Secret) (client.Client, error) { return nil, nil },
+				newClient: func(_ context.Context, _ *corev1.Secret) (client.Client, error) { return &test.MockClient{}, nil },
 			},
 			args: args{
 				ctx: context.Background(),
@@ -239,9 +236,9 @@ func TestConnectYugabyte(t *testing.T) {
 			conn: &connecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					switch key {
-					case client.ObjectKey{Namespace: namespace, Name: providerName}:
+					case client.ObjectKey{Name: providerName}:
 						*obj.(*kubev1alpha1.Provider) = provider
-					case client.ObjectKey{Namespace: namespace, Name: providerSecretName}:
+					case client.ObjectKey{Namespace: providerSecretNamespace, Name: providerSecretName}:
 						return errorBoom
 					}
 					return nil
@@ -254,9 +251,9 @@ func TestConnectYugabyte(t *testing.T) {
 			conn: &connecter{
 				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
 					switch key {
-					case client.ObjectKey{Namespace: namespace, Name: providerName}:
+					case client.ObjectKey{Name: providerName}:
 						*obj.(*kubev1alpha1.Provider) = provider
-					case client.ObjectKey{Namespace: namespace, Name: providerSecretName}:
+					case client.ObjectKey{Namespace: providerSecretNamespace, Name: providerSecretName}:
 						*obj.(*corev1.Secret) = secret
 					}
 					return nil
