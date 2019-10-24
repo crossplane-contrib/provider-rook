@@ -1,28 +1,12 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: app-project1-dev
----
-apiVersion: database.crossplane.io/v1alpha1
-kind: PostgreSQLInstanceClass
-metadata:
-  name: postgresql-standard
-  namespace: app-project1-dev
-classRef:
-  kind: YugabyteClusterClass
-  apiVersion: database.rook.crossplane.io/v1alpha1
-  name: yugabyte-standard
-  namespace: rook-infra-dev
----
 apiVersion: database.rook.crossplane.io/v1alpha1
 kind: YugabyteClusterClass
 metadata:
   name: yugabyte-standard
-  namespace: rook-infra-dev
+  labels:
+    default: "true"
 specTemplate:
   providerRef:
     name: demo-k8s-provider
-    namespace: rook-infra-dev
   reclaimPolicy: Delete
   forProvider:
     name: my-test-yugabyte
