@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package database
+package cockroach
 
 import (
 	"context"
@@ -34,107 +34,13 @@ import (
 	corev1alpha1 "github.com/crossplaneio/stack-rook/apis/v1alpha1"
 )
 
-var (
-	_ resource.ManagedConfigurator = resource.ManagedConfiguratorFn(ConfigureYugabyteCluster)
-	_ resource.ManagedConfigurator = resource.ManagedConfiguratorFn(ConfigureCockroachCluster)
-)
-
-func TestConfigureYugabyteCluster(t *testing.T) {
-	type args struct {
-		ctx context.Context
-		cm  resource.Claim
-		cs  resource.NonPortableClass
-		mg  resource.Managed
-	}
-
-	type want struct {
-		mg  resource.Managed
-		err error
-	}
-
-	claimUID := types.UID("definitely-a-uuid")
-	providerName := "coolprovider"
-
-	server := v1alpha1.ServerSpec{
-		Replicas: 3,
-		Network: v1alpha1.NetworkSpec{
-			Ports: []v1alpha1.PortSpec{{
-				Name: "cool-port",
-				Port: 7000,
-			}},
-		},
-		VolumeClaimTemplate: corev1.PersistentVolumeClaim{},
-	}
-
-	params := v1alpha1.YugabyteClusterParameters{
-		Name:        "cool-yugabyte",
-		Namespace:   "cool-yugabyte-ns",
-		Annotations: corev1alpha1.Annotations(map[string]string{"label": "value"}),
-		Master:      server,
-		TServer:     server,
-	}
-
-	cases := map[string]struct {
-		args args
-		want want
-	}{
-		"Successful": {
-			args: args{
-				cm: &databasev1alpha1.PostgreSQLInstance{
-					ObjectMeta: metav1.ObjectMeta{UID: claimUID},
-					Spec: databasev1alpha1.PostgreSQLInstanceSpec{
-						ResourceClaimSpec: runtimev1alpha1.ResourceClaimSpec{
-							PortableClassReference:           &corev1.LocalObjectReference{},
-							WriteConnectionSecretToReference: corev1.LocalObjectReference{},
-							ResourceReference:                nil,
-						},
-					},
-				},
-				cs: &v1alpha1.YugabyteClusterClass{
-					SpecTemplate: v1alpha1.YugabyteClusterClassSpecTemplate{
-						NonPortableClassSpecTemplate: runtimev1alpha1.NonPortableClassSpecTemplate{
-							ProviderReference: &corev1.ObjectReference{Name: providerName},
-							ReclaimPolicy:     runtimev1alpha1.ReclaimDelete,
-						},
-						YugabyteClusterParameters: params,
-					},
-				},
-				mg: &v1alpha1.YugabyteCluster{},
-			},
-			want: want{
-				mg: &v1alpha1.YugabyteCluster{
-					Spec: v1alpha1.YugabyteClusterSpec{
-						ResourceSpec: runtimev1alpha1.ResourceSpec{
-							ProviderReference:                &corev1.ObjectReference{Name: providerName},
-							ReclaimPolicy:                    runtimev1alpha1.ReclaimDelete,
-							WriteConnectionSecretToReference: corev1.LocalObjectReference{Name: string(claimUID)},
-						},
-						YugabyteClusterParameters: params,
-					},
-				},
-				err: nil,
-			},
-		},
-	}
-
-	for name, tc := range cases {
-		t.Run(name, func(t *testing.T) {
-			err := ConfigureYugabyteCluster(tc.args.ctx, tc.args.cm, tc.args.cs, tc.args.mg)
-			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
-				t.Errorf("ConfigureYugabyteCluster(...): -want error, +got error:\n%s", diff)
-			}
-			if diff := cmp.Diff(tc.want.mg, tc.args.mg, test.EquateConditions()); diff != "" {
-				t.Errorf("ConfigureYugabyteCluster(...) Managed: -want, +got:\n%s", diff)
-			}
-		})
-	}
-}
+var _ resource.ManagedConfigurator = resource.ManagedConfiguratorFn(ConfigureCockroachCluster)
 
 func TestConfigureCockroachCluster(t *testing.T) {
 	type args struct {
 		ctx context.Context
 		cm  resource.Claim
-		cs  resource.NonPortableClass
+		cs  resource.Class
 		mg  resource.Managed
 	}
 
@@ -187,15 +93,15 @@ func TestConfigureCockroachCluster(t *testing.T) {
 					ObjectMeta: metav1.ObjectMeta{UID: claimUID},
 					Spec: databasev1alpha1.PostgreSQLInstanceSpec{
 						ResourceClaimSpec: runtimev1alpha1.ResourceClaimSpec{
-							PortableClassReference:           &corev1.LocalObjectReference{},
-							WriteConnectionSecretToReference: corev1.LocalObjectReference{},
+							ClassReference:                   &corev1.ObjectReference{},
+							WriteConnectionSecretToReference: &runtimev1alpha1.LocalSecretReference{},
 							ResourceReference:                nil,
 						},
 					},
 				},
 				cs: &v1alpha1.CockroachClusterClass{
 					SpecTemplate: v1alpha1.CockroachClusterClassSpecTemplate{
-						NonPortableClassSpecTemplate: runtimev1alpha1.NonPortableClassSpecTemplate{
+						ClassSpecTemplate: runtimev1alpha1.ClassSpecTemplate{
 							ProviderReference: &corev1.ObjectReference{Name: providerName},
 							ReclaimPolicy:     runtimev1alpha1.ReclaimDelete,
 						},
@@ -210,7 +116,7 @@ func TestConfigureCockroachCluster(t *testing.T) {
 						ResourceSpec: runtimev1alpha1.ResourceSpec{
 							ProviderReference:                &corev1.ObjectReference{Name: providerName},
 							ReclaimPolicy:                    runtimev1alpha1.ReclaimDelete,
-							WriteConnectionSecretToReference: corev1.LocalObjectReference{Name: string(claimUID)},
+							WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: string(claimUID)},
 						},
 						CockroachClusterParameters: params,
 					},

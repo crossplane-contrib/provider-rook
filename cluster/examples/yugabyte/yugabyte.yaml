@@ -2,11 +2,9 @@ apiVersion: database.rook.crossplane.io/v1alpha1
 kind: YugabyteCluster
 metadata:
   name: test-cluster
-  namespace: rook-infra-dev
 spec:
   providerRef:
     name: demo-k8s-provider
-    namespace: rook-infra-dev
   reclaimPolicy: Delete
   forProvider:
     name: my-test-yugabyte

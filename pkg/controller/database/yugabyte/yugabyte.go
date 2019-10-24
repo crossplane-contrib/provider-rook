@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package database
+package yugabyte
 
 import (
 	"context"
@@ -50,28 +50,28 @@ const (
 	errDeleteYugabyteCluster     = "cannot delete Yugabyte cluster in target Kubernetes cluster"
 )
 
-// YugabyteClusterController is responsible for adding the YugabyteCluster
+// Controller is responsible for adding the YugabyteCluster
 // controller and its corresponding reconciler to the manager with any runtime configuration.
-type YugabyteClusterController struct{}
+type Controller struct{}
 
 // SetupWithManager creates a new YugabyteCluster Controller and adds it to the
 // Manager with default RBAC. The Manager will set fields on the Controller and
 // start it when the Manager is Started.
-func (c *YugabyteClusterController) SetupWithManager(mgr ctrl.Manager) error {
+func (c *Controller) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(strings.ToLower(fmt.Sprintf("%s.%s", v1alpha1.YugabyteClusterKind, v1alpha1.Group))).
 		For(&v1alpha1.YugabyteCluster{}).
 		Complete(resource.NewManagedReconciler(mgr,
 			resource.ManagedKind(v1alpha1.YugabyteClusterGroupVersionKind),
-			resource.WithExternalConnecter(&yugabyteConnecter{client: mgr.GetClient(), newClient: yugabyte.NewClient})))
+			resource.WithExternalConnecter(&connecter{client: mgr.GetClient(), newClient: yugabyte.NewClient})))
 }
 
-type yugabyteConnecter struct {
+type connecter struct {
 	client    client.Client
 	newClient func(ctx context.Context, secret *corev1.Secret) (client.Client, error)
 }
 
-func (c *yugabyteConnecter) Connect(ctx context.Context, mg resource.Managed) (resource.ExternalClient, error) {
+func (c *connecter) Connect(ctx context.Context, mg resource.Managed) (resource.ExternalClient, error) {
 	i, ok := mg.(*v1alpha1.YugabyteCluster)
 	if !ok {
 		return nil, errors.New(errNotYugabyteCluster)
@@ -84,20 +84,20 @@ func (c *yugabyteConnecter) Connect(ctx context.Context, mg resource.Managed) (r
 	}
 
 	s := &corev1.Secret{}
-	n = types.NamespacedName{Namespace: p.Namespace, Name: p.Spec.Secret.Name}
+	n = types.NamespacedName{Namespace: p.Spec.Secret.Namespace, Name: p.Spec.Secret.Name}
 	if err := c.client.Get(ctx, n, s); err != nil {
 		return nil, errors.Wrap(err, errGetYugabyteProviderSecret)
 	}
 
 	client, err := c.newClient(ctx, s)
-	return &yugabyteExternal{client: client}, errors.Wrap(err, errNewYugabyteClient)
+	return &external{client: client}, errors.Wrap(err, errNewYugabyteClient)
 }
 
-type yugabyteExternal struct {
+type external struct {
 	client client.Client
 }
 
-func (e *yugabyteExternal) Observe(ctx context.Context, mg resource.Managed) (resource.ExternalObservation, error) {
+func (e *external) Observe(ctx context.Context, mg resource.Managed) (resource.ExternalObservation, error) {
 	c, ok := mg.(*v1alpha1.YugabyteCluster)
 	if !ok {
 		return resource.ExternalObservation{}, errors.New(errNotYugabyteCluster)
@@ -133,7 +133,7 @@ func (e *yugabyteExternal) Observe(ctx context.Context, mg resource.Managed) (re
 
 }
 
-func (e *yugabyteExternal) Create(ctx context.Context, mg resource.Managed) (resource.ExternalCreation, error) {
+func (e *external) Create(ctx context.Context, mg resource.Managed) (resource.ExternalCreation, error) {
 	c, ok := mg.(*v1alpha1.YugabyteCluster)
 	if !ok {
 		return resource.ExternalCreation{}, errors.New(errNotYugabyteCluster)
@@ -145,7 +145,7 @@ func (e *yugabyteExternal) Create(ctx context.Context, mg resource.Managed) (res
 	return resource.ExternalCreation{}, errors.Wrap(err, errCreateYugabyteCluster)
 }
 
-func (e *yugabyteExternal) Update(ctx context.Context, mg resource.Managed) (resource.ExternalUpdate, error) {
+func (e *external) Update(ctx context.Context, mg resource.Managed) (resource.ExternalUpdate, error) {
 	c, ok := mg.(*v1alpha1.YugabyteCluster)
 	if !ok {
 		return resource.ExternalUpdate{}, errors.New(errNotYugabyteCluster)
@@ -172,7 +172,7 @@ func (e *yugabyteExternal) Update(ctx context.Context, mg resource.Managed) (res
 	return resource.ExternalUpdate{}, errors.Wrap(err, errUpdateYugabyteCluster)
 }
 
-func (e *yugabyteExternal) Delete(ctx context.Context, mg resource.Managed) error {
+func (e *external) Delete(ctx context.Context, mg resource.Managed) error {
 	c, ok := mg.(*v1alpha1.YugabyteCluster)
 	if !ok {
 		return errors.New(errNotYugabyteCluster)

@@ -18,7 +18,7 @@ apiVersion: kubernetes.crossplane.io/v1alpha1
 kind: Provider
 metadata:
   name: demo-k8s-provider
-  namespace: rook-infra-dev
 spec:
   credentialsSecretRef:
     name: demo-cluster-creds
+    namespace: rook-infra-dev
