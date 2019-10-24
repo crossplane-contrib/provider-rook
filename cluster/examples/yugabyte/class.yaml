@@ -2,12 +2,13 @@ apiVersion: database.rook.crossplane.io/v1alpha1
 kind: YugabyteClusterClass
 metadata:
   name: yugabyte-standard
-  labels:
-    default: "true"
+  annotations:
+    resourceclass.crossplane.io/is-default-class: "true"
 specTemplate:
   providerRef:
     name: demo-k8s-provider
   reclaimPolicy: Delete
+  writeConnectionSecretsToNamespace: crossplane-system
   forProvider:
     name: my-test-yugabyte
     namespace: rook-yugabytedb

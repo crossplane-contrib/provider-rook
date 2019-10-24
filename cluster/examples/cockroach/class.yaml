@@ -2,13 +2,13 @@ apiVersion: database.rook.crossplane.io/v1alpha1
 kind: CockroachClusterClass
 metadata:
   name: cockroach-standard
-  labels:
-    default: "true"
+  annotations:
+    resourceclass.crossplane.io/is-default-class: "true"
 specTemplate:
   providerRef:
     name: demo-k8s-provider
-    namespace: rook-infra-dev
   reclaimPolicy: Delete
+  writeConnectionSecretsToNamespace: crossplane-system
   forProvider:
     name: my-test-cockroach
     namespace: rook-cockroachdb

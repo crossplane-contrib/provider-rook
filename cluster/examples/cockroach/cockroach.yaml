@@ -5,7 +5,6 @@ metadata:
 spec:
   providerRef:
     name: demo-k8s-provider
-    namespace: rook-infra-dev
   reclaimPolicy: Delete
   forProvider:
     name: my-test-cockroach
