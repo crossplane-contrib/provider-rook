@@ -7,13 +7,18 @@ metadata:
   name: cockroachclusters.database.rook.crossplane.io
 spec:
   additionalPrinterColumns:
+  - JSONPath: .status.bindingPhase
+    name: STATUS
+    type: string
+  - JSONPath: .status.state
+    name: STATE
+    type: string
+  - JSONPath: .spec.classRef.name
+    name: CLASS
+    type: string
   - JSONPath: .metadata.creationTimestamp
     name: AGE
     type: date
-  - JSONPath: .spec.credentialsSecretRef.name
-    name: SECRET-NAME
-    priority: 1
-    type: string
   group: database.rook.crossplane.io
   names:
     kind: CockroachCluster
