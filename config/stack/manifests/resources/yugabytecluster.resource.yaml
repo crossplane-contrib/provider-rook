@@ -2,7 +2,7 @@ id: yugabytecluster
 title: YugabyteDB Cluster
 titlePlural: YugabyteDB Clusters
 category: Database
-overviewShort: "A YugabyteCluster configures a Rook 'YugabyteCluster'"
+overviewShort: "A YugabyteCluster configures a Rook 'ybclusters.yugabytedb.rook.io'"
 overview: |
  YugabyteDB is the open source, high-performance, distributed SQL database for global, internet-scale apps.
 readme: |

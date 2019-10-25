@@ -2,7 +2,7 @@ id: cockroachcluster
 title: CockroachDB Cluster
 titlePlural: CockroachDB Clusters
 category: Database
-overviewShort: "A CockroachCluster configures a Rook 'CockroachCluster'"
+overviewShort: "A CockroachCluster configures a Rook 'clusters.cockroachdb.rook.io'"
 overview: |
  CockroachDB scales horizontally without reconfiguration or need for a massive architectural overhaul. Simply add a new node to the cluster and CockroachDB takes care of the underlying complexity.
 readme: |
