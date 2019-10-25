@@ -1,0 +1,23 @@
+id: yugabytecluster
+title: YugabyteDB Cluster
+titlePlural: YugabyteDB Clusters
+category: Database
+overviewShort: "A YugabyteCluster configures a Rook 'YugabyteCluster'"
+overview: |
+ YugabyteDB is the open source, high-performance, distributed SQL database for global, internet-scale apps.
+readme: |
+ ## Why YugabyteDB?
+
+ Developers get low latency reads, ACID transactions and globally consistent
+ secondary indexes and full SQL. Develop both scale-out RDBMS and internet-scale
+ OLTP apps with ease.
+ 
+ DBAs & Operations simplify operations with a single database that delivers linear scalability, automatic global data distribution, multi-TB density per node and rebalancing without performance bottlenecks or down time.
+
+ CEOs & Line of Business Owners reign in database sprawl and benefit from
+ reduced infrastructure and software licensing costs. Deliver new features and enter new markets with more speed and agility.
+
+ ## Learn more
+
+ This content is from https://www.yugabyte.com/yugabytedb/, you can learn more
+ in the [YugabyteDB documentation](https://docs.yugabyte.com/).
