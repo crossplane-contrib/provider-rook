@@ -1,0 +1,35 @@
+id: cockroachcluster
+title: CockroachDB Cluster
+titlePlural: CockroachDB Clusters
+category: Database
+overviewShort: "A CockroachCluster configures a Rook 'clusters.cockroachdb.rook.io'"
+overview: |
+ CockroachDB scales horizontally without reconfiguration or need for a massive architectural overhaul. Simply add a new node to the cluster and CockroachDB takes care of the underlying complexity.
+readme: |
+ ## Architect Your Data However You Want
+
+ CockroachDB allows you to deploy a database on-prem, in the cloud or even across clouds, all as a single store. It is a simple and straightforward bridge to your future, cloud-based data architecture.
+
+ * Eliminate risk associated with a single cloud platform
+ * Deploy on multiple clouds and partition data across them
+ * Use the right cloud and set of services for the right job
+
+ ## Access Your Data, All The Time & Everywhere
+
+ CockroachDB delivers an always-on and available database designed so that any loss of nodes is consumed without impact to availability. It creates & manages replicates of your data to ensure reliability.
+
+ * Eliminate complex, expensive backup configurations
+ * Avoid arduous, annoying remediation events (Zero RPO)
+ * Rolling upgrades eliminate downtime & ease updates/schema changes
+
+ ## Give Your Data A Location
+
+ CockroachDB is the only database in the world that enables you to attach ‘location’ to your data at the row level. This capability allows you to regulate the distance between your users and their data.
+
+ * Ensure low latency to end-users wherever they are.
+ * Pin data to a locale to comply with data protection laws.
+ * Tie specific data to specific clouds or datacenters.
+
+ ## Learn more
+
+ This content is from https://www.cockroachlabs.com/product/, you can learn more in the [CockroachDB documentation](https://www.cockroachlabs.com/docs/stable/).

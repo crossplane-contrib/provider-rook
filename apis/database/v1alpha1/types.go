@@ -68,7 +68,7 @@ type YugabyteClusterStatus struct {
 
 // +kubebuilder:object:root=true
 
-// A YugabyteCluster configures a Rook 'YugabyteCluster'
+// A YugabyteCluster configures a Rook 'ybclusters.yugabytedb.rook.io'
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.bindingPhase"
 // +kubebuilder:printcolumn:name="STATE",type="string",JSONPath=".status.state"
@@ -151,7 +151,7 @@ type CockroachClusterStatus struct {
 
 // +kubebuilder:object:root=true
 
-// A CockroachCluster configures a Rook 'CockroachCluster'
+// A CockroachCluster configures a Rook 'clusters.cockroachdb.rook.io'
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.bindingPhase"
 // +kubebuilder:printcolumn:name="STATE",type="string",JSONPath=".status.state"

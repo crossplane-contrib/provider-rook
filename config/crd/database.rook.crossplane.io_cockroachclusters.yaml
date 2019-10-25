@@ -30,7 +30,7 @@ spec:
     status: {}
   validation:
     openAPIV3Schema:
-      description: A CockroachCluster configures a Rook 'CockroachCluster'
+      description: A CockroachCluster configures a Rook 'clusters.cockroachdb.rook.io'
       properties:
         apiVersion:
           description: 'APIVersion defines the versioned schema of this representation

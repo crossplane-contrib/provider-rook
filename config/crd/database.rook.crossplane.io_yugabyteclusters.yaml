@@ -30,7 +30,7 @@ spec:
     status: {}
   validation:
     openAPIV3Schema:
-      description: A YugabyteCluster configures a Rook 'YugabyteCluster'
+      description: A YugabyteCluster configures a Rook 'ybclusters.yugabytedb.rook.io'
       properties:
         apiVersion:
           description: 'APIVersion defines the versioned schema of this representation
