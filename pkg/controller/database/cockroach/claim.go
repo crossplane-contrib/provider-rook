@@ -106,8 +106,6 @@ func (c *ClaimController) SetupWithManager(mgr ctrl.Manager) error {
 		resource.ClaimKind(databasev1alpha1.PostgreSQLInstanceGroupVersionKind),
 		resource.ClassKind(v1alpha1.CockroachClusterClassGroupVersionKind),
 		resource.ManagedKind(v1alpha1.CockroachClusterGroupVersionKind),
-		resource.WithManagedBinder(resource.NewAPIManagedStatusBinder(mgr.GetClient(), mgr.GetScheme())),
-		resource.WithManagedFinalizer(resource.NewAPIManagedStatusUnbinder(mgr.GetClient())),
 		resource.WithManagedConfigurators(
 			resource.ManagedConfiguratorFn(ConfigureCockroachCluster),
 			resource.NewObjectMetaConfigurator(mgr.GetScheme()),
