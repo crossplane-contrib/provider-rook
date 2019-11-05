@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: "stack-rook-controller"
-        image: "crossplane/stack-rook:v0.1.0"
+        image: "crossplane/stack-rook:v0.1.1"
         env:
         - name: POD_NAME
           valueFrom:
