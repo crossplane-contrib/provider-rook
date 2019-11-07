@@ -3,9 +3,9 @@ module github.com/crossplaneio/stack-rook
 go 1.12
 
 require (
-	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/crossplaneio/crossplane v0.4.0
 	github.com/crossplaneio/crossplane-runtime v0.2.1
+	github.com/crossplaneio/crossplane-tools v0.0.0-20191023215726-61fa1eff2a2e
 	github.com/google/go-cmp v0.3.1
 	github.com/onsi/ginkgo v1.10.1 // indirect
 	github.com/onsi/gomega v1.7.0 // indirect
@@ -20,4 +20,5 @@ require (
 	k8s.io/kube-openapi v0.0.0-20190816220812-743ec37842bf // indirect
 	k8s.io/utils v0.0.0-20191010214722-8d271d903fe4 // indirect
 	sigs.k8s.io/controller-runtime v0.2.0
+	sigs.k8s.io/controller-tools v0.2.1
 )
