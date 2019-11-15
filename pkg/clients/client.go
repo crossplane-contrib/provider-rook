@@ -50,7 +50,7 @@ func NewClient(ctx context.Context, s *corev1.Secret, scheme *runtime.Scheme) (c
 			CertData:   s.Data[runtimev1alpha1.ResourceCredentialsSecretClientCertKey],
 			KeyData:    s.Data[runtimev1alpha1.ResourceCredentialsSecretClientKeyKey],
 		},
-		BearerToken: string(s.Data[runtimev1alpha1.ResourceCredentialsTokenKey]),
+		BearerToken: string(s.Data[runtimev1alpha1.ResourceCredentialsSecretTokenKey]),
 	}
 
 	kc, err := client.New(config, client.Options{Scheme: scheme})
