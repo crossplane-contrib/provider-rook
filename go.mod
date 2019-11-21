@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/crossplaneio/crossplane v0.4.0
-	github.com/crossplaneio/crossplane-runtime v0.2.2
+	github.com/crossplaneio/crossplane-runtime v0.2.3
 	github.com/crossplaneio/crossplane-tools v0.0.0-20191023215726-61fa1eff2a2e
 	github.com/google/go-cmp v0.3.1
 	github.com/onsi/ginkgo v1.10.1 // indirect

@@ -108,7 +108,8 @@ func (c *ClaimController) SetupWithManager(mgr ctrl.Manager) error {
 		resource.ManagedKind(v1alpha1.YugabyteClusterGroupVersionKind),
 		resource.WithManagedConfigurators(
 			resource.ManagedConfiguratorFn(ConfigureYugabyteCluster),
-			resource.NewObjectMetaConfigurator(mgr.GetScheme()),
+			resource.ManagedConfiguratorFn(resource.ConfigureReclaimPolicy),
+			resource.ManagedConfiguratorFn(resource.ConfigureNames),
 		))
 
 	return ctrl.NewControllerManagedBy(mgr).
