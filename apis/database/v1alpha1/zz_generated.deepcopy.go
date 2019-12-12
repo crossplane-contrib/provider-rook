@@ -83,7 +83,7 @@ func (in *CockroachClusterClass) DeepCopyObject() runtime.Object {
 func (in *CockroachClusterClassList) DeepCopyInto(out *CockroachClusterClassList) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
-	out.ListMeta = in.ListMeta
+	in.ListMeta.DeepCopyInto(&out.ListMeta)
 	if in.Items != nil {
 		in, out := &in.Items, &out.Items
 		*out = make([]CockroachClusterClass, len(*in))
@@ -132,7 +132,7 @@ func (in *CockroachClusterClassSpecTemplate) DeepCopy() *CockroachClusterClassSp
 func (in *CockroachClusterList) DeepCopyInto(out *CockroachClusterList) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
-	out.ListMeta = in.ListMeta
+	in.ListMeta.DeepCopyInto(&out.ListMeta)
 	if in.Items != nil {
 		in, out := &in.Items, &out.Items
 		*out = make([]CockroachCluster, len(*in))
@@ -326,7 +326,7 @@ func (in *YugabyteClusterClass) DeepCopyObject() runtime.Object {
 func (in *YugabyteClusterClassList) DeepCopyInto(out *YugabyteClusterClassList) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
-	out.ListMeta = in.ListMeta
+	in.ListMeta.DeepCopyInto(&out.ListMeta)
 	if in.Items != nil {
 		in, out := &in.Items, &out.Items
 		*out = make([]YugabyteClusterClass, len(*in))
@@ -375,7 +375,7 @@ func (in *YugabyteClusterClassSpecTemplate) DeepCopy() *YugabyteClusterClassSpec
 func (in *YugabyteClusterList) DeepCopyInto(out *YugabyteClusterList) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
-	out.ListMeta = in.ListMeta
+	in.ListMeta.DeepCopyInto(&out.ListMeta)
 	if in.Items != nil {
 		in, out := &in.Items, &out.Items
 		*out = make([]YugabyteCluster, len(*in))
