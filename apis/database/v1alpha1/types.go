@@ -79,7 +79,7 @@ type YugabyteCluster struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   YugabyteClusterSpec   `json:"spec,omitempty"`
+	Spec   YugabyteClusterSpec   `json:"spec"`
 	Status YugabyteClusterStatus `json:"status,omitempty"`
 }
 
@@ -162,7 +162,7 @@ type CockroachCluster struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   CockroachClusterSpec   `json:"spec,omitempty"`
+	Spec   CockroachClusterSpec   `json:"spec"`
 	Status CockroachClusterStatus `json:"status,omitempty"`
 }
 
