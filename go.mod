@@ -1,6 +1,6 @@
 module github.com/crossplaneio/stack-rook
 
-go 1.12
+go 1.13
 
 require (
 	github.com/crossplaneio/crossplane v0.6.0-rc.0.20191226165033-a452562456e0
