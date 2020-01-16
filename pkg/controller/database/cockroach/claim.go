@@ -26,6 +26,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
 	runtimev1alpha1 "github.com/crossplaneio/crossplane-runtime/apis/core/v1alpha1"
+	"github.com/crossplaneio/crossplane-runtime/pkg/reconciler/claimbinding"
+	"github.com/crossplaneio/crossplane-runtime/pkg/reconciler/claimdefaulting"
+	"github.com/crossplaneio/crossplane-runtime/pkg/reconciler/claimscheduling"
 	"github.com/crossplaneio/crossplane-runtime/pkg/resource"
 	databasev1alpha1 "github.com/crossplaneio/crossplane/apis/database/v1alpha1"
 
@@ -53,7 +56,7 @@ func (c *ClaimSchedulingController) SetupWithManager(mgr ctrl.Manager) error {
 			resource.HasNoClassReference(),
 			resource.HasNoManagedResourceReference(),
 		))).
-		Complete(resource.NewClaimSchedulingReconciler(mgr,
+		Complete(claimscheduling.NewReconciler(mgr,
 			resource.ClaimKind(databasev1alpha1.PostgreSQLInstanceGroupVersionKind),
 			resource.ClassKind(v1alpha1.CockroachClusterClassGroupVersionKind),
 		))
@@ -79,7 +82,7 @@ func (c *ClaimDefaultingController) SetupWithManager(mgr ctrl.Manager) error {
 			resource.HasNoClassReference(),
 			resource.HasNoManagedResourceReference(),
 		))).
-		Complete(resource.NewClaimDefaultingReconciler(mgr,
+		Complete(claimdefaulting.NewReconciler(mgr,
 			resource.ClaimKind(databasev1alpha1.PostgreSQLInstanceGroupVersionKind),
 			resource.ClassKind(v1alpha1.CockroachClusterClassGroupVersionKind),
 		))
@@ -102,14 +105,14 @@ func (c *ClaimController) SetupWithManager(mgr ctrl.Manager) error {
 		resource.IsManagedKind(resource.ManagedKind(v1alpha1.CockroachClusterGroupVersionKind), mgr.GetScheme()),
 	))
 
-	r := resource.NewClaimReconciler(mgr,
+	r := claimbinding.NewReconciler(mgr,
 		resource.ClaimKind(databasev1alpha1.PostgreSQLInstanceGroupVersionKind),
 		resource.ClassKind(v1alpha1.CockroachClusterClassGroupVersionKind),
 		resource.ManagedKind(v1alpha1.CockroachClusterGroupVersionKind),
-		resource.WithManagedConfigurators(
-			resource.ManagedConfiguratorFn(ConfigureCockroachCluster),
-			resource.ManagedConfiguratorFn(resource.ConfigureReclaimPolicy),
-			resource.ManagedConfiguratorFn(resource.ConfigureNames),
+		claimbinding.WithManagedConfigurators(
+			claimbinding.ManagedConfiguratorFn(ConfigureCockroachCluster),
+			claimbinding.ManagedConfiguratorFn(claimbinding.ConfigureReclaimPolicy),
+			claimbinding.ManagedConfiguratorFn(claimbinding.ConfigureNames),
 		))
 
 	return ctrl.NewControllerManagedBy(mgr).

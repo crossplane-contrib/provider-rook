@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	runtimev1alpha1 "github.com/crossplaneio/crossplane-runtime/apis/core/v1alpha1"
+	"github.com/crossplaneio/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplaneio/crossplane-runtime/pkg/resource"
 	"github.com/crossplaneio/crossplane-runtime/pkg/test"
 	kubev1alpha1 "github.com/crossplaneio/crossplane/apis/kubernetes/v1alpha1"
@@ -180,8 +181,8 @@ func rookCockroachCluster(im ...rookCockroachClusterModifier) *rookv1alpha1.Clus
 	return i
 }
 
-var _ resource.ExternalClient = &external{}
-var _ resource.ExternalConnecter = &connecter{}
+var _ managed.ExternalClient = &external{}
+var _ managed.ExternalConnecter = &connecter{}
 
 func TestConnectCockroach(t *testing.T) {
 	provider := kubev1alpha1.Provider{
@@ -212,7 +213,7 @@ func TestConnectCockroach(t *testing.T) {
 	}
 
 	cases := map[string]struct {
-		conn resource.ExternalConnecter
+		conn managed.ExternalConnecter
 		args args
 		want want
 	}{
@@ -302,12 +303,12 @@ func TestObserveCockroach(t *testing.T) {
 	}
 	type want struct {
 		mg          resource.Managed
-		observation resource.ExternalObservation
+		observation managed.ExternalObservation
 		err         error
 	}
 
 	cases := map[string]struct {
-		client resource.ExternalClient
+		client managed.ExternalClient
 		args   args
 		want   want
 	}{
@@ -333,9 +334,9 @@ func TestObserveCockroach(t *testing.T) {
 				mg: cockroachCluster(
 					withConditions(runtimev1alpha1.Available()),
 					withBindingPhase(runtimev1alpha1.BindingPhaseUnbound)),
-				observation: resource.ExternalObservation{
+				observation: managed.ExternalObservation{
 					ResourceExists:    true,
-					ConnectionDetails: resource.ConnectionDetails{},
+					ConnectionDetails: managed.ConnectionDetails{},
 				},
 			},
 		},
@@ -351,7 +352,7 @@ func TestObserveCockroach(t *testing.T) {
 			},
 			want: want{
 				mg:          cockroachCluster(),
-				observation: resource.ExternalObservation{ResourceExists: false},
+				observation: managed.ExternalObservation{ResourceExists: false},
 			},
 		},
 		"NotCockroachCluster": {
@@ -393,12 +394,12 @@ func TestCreateCockroach(t *testing.T) {
 	}
 	type want struct {
 		mg       resource.Managed
-		creation resource.ExternalCreation
+		creation managed.ExternalCreation
 		err      error
 	}
 
 	cases := map[string]struct {
-		client resource.ExternalClient
+		client managed.ExternalClient
 		args   args
 		want   want
 	}{
@@ -470,12 +471,12 @@ func TestUpdateCockroach(t *testing.T) {
 	}
 	type want struct {
 		mg     resource.Managed
-		update resource.ExternalUpdate
+		update managed.ExternalUpdate
 		err    error
 	}
 
 	cases := map[string]struct {
-		client resource.ExternalClient
+		client managed.ExternalClient
 		args   args
 		want   want
 	}{
@@ -596,7 +597,7 @@ func TestDeleteCockroach(t *testing.T) {
 	}
 
 	cases := map[string]struct {
-		client resource.ExternalClient
+		client managed.ExternalClient
 		args   args
 		want   want
 	}{

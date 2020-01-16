@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	runtimev1alpha1 "github.com/crossplaneio/crossplane-runtime/apis/core/v1alpha1"
+	"github.com/crossplaneio/crossplane-runtime/pkg/reconciler/claimbinding"
 	"github.com/crossplaneio/crossplane-runtime/pkg/resource"
 	"github.com/crossplaneio/crossplane-runtime/pkg/test"
 	databasev1alpha1 "github.com/crossplaneio/crossplane/apis/database/v1alpha1"
@@ -34,7 +35,7 @@ import (
 	corev1alpha1 "github.com/crossplaneio/stack-rook/apis/v1alpha1"
 )
 
-var _ resource.ManagedConfigurator = resource.ManagedConfiguratorFn(ConfigureCockroachCluster)
+var _ claimbinding.ManagedConfigurator = claimbinding.ManagedConfiguratorFn(ConfigureCockroachCluster)
 
 func TestConfigureCockroachCluster(t *testing.T) {
 	type args struct {
