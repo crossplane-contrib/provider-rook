@@ -6,5 +6,5 @@ overviewShort: "A CockroachClusterClass is a resource class. It defines the desi
 overview: |
   A CockroachClusterClass is a resource class. It defines the desired spec of resource claims that use it to dynamically provision a managed resource.
 readme: |
-  Full documentation can be found in the Crossplane [API Reference docs](https://crossplane.io/docs/master/api/crossplaneio/stack-rook/storage-rook-crossplane-io-v1alpha1.html#CockroachClusterClass).
+  Full documentation can be found in the Crossplane [API Reference docs](https://crossplane.io/docs/0.7/api/crossplaneio/stack-rook/storage-rook-crossplane-io-v1alpha1.html#CockroachClusterClass).
 
