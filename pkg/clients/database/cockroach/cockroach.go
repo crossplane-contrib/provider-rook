@@ -27,8 +27,8 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/crossplaneio/stack-rook/apis/database/v1alpha1"
-	"github.com/crossplaneio/stack-rook/pkg/clients"
+	"github.com/crossplane/stack-rook/apis/database/v1alpha1"
+	"github.com/crossplane/stack-rook/pkg/clients"
 )
 
 // NewClient returns a new Kubernetes client with Rook Yugabyte types

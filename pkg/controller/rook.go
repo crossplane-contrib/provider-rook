@@ -19,8 +19,8 @@ package controller
 import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	"github.com/crossplaneio/stack-rook/pkg/controller/database/cockroach"
-	"github.com/crossplaneio/stack-rook/pkg/controller/database/yugabyte"
+	"github.com/crossplane/stack-rook/pkg/controller/database/cockroach"
+	"github.com/crossplane/stack-rook/pkg/controller/database/yugabyte"
 )
 
 // Controllers passes down config and adds individual controllers to the manager.
