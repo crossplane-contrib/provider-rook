@@ -50,4 +50,4 @@ Stack-Rook adheres to the same [Code of Conduct](https://github.com/crossplane/c
 
 Stack-Rook is under the Apache 2.0 license.
 
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fcrossplaneio%2Fstack-rook.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fcrossplaneio%2Fstack-rook?ref=badge_large)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fcrossplane%2Fstack-rook.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fcrossplane%2Fstack-rook?ref=badge_large)
