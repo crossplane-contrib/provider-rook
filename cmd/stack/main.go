@@ -28,17 +28,15 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
 
-	"github.com/crossplaneio/stack-rook/apis"
-	"github.com/crossplaneio/stack-rook/pkg/controller"
+	"github.com/crossplane/stack-rook/apis"
+	"github.com/crossplane/stack-rook/pkg/controller"
 
-	"github.com/crossplaneio/crossplane-runtime/pkg/logging"
-	crossplaneapis "github.com/crossplaneio/crossplane/apis"
+	"github.com/crossplane/crossplane-runtime/pkg/logging"
+	crossplaneapis "github.com/crossplane/crossplane/apis"
 )
 
 func main() {
 	var (
-		log = logging.Logger
-
 		// top level app definition
 		app        = kingpin.New(filepath.Base(os.Args[0]), "An open source multicloud control plane.").DefaultEnvars()
 		debug      = app.Flag("debug", "Run with debug logging.").Short('d').Bool()
@@ -51,8 +49,8 @@ func main() {
 	)
 	cmd := kingpin.MustParse(app.Parse(os.Args[1:]))
 
-	zl := zap.Logger(*debug)
-	logging.SetLogger(zl)
+	zl := zap.New(zap.UseDevMode(*debug))
+	log := logging.NewLogrLogger(zl.WithName("stack-rook"))
 	if *debug {
 		// The controller-runtime runs with a no-op logger by default. It is
 		// *very* verbose even at info level, so we only provide it a real

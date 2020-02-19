@@ -20,19 +20,19 @@ import (
 	"context"
 	"testing"
 
-	runtimev1alpha1 "github.com/crossplaneio/crossplane-runtime/apis/core/v1alpha1"
-	"github.com/crossplaneio/crossplane-runtime/pkg/reconciler/claimbinding"
-	"github.com/crossplaneio/crossplane-runtime/pkg/resource"
-	"github.com/crossplaneio/crossplane-runtime/pkg/test"
-	databasev1alpha1 "github.com/crossplaneio/crossplane/apis/database/v1alpha1"
+	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
+	"github.com/crossplane/crossplane-runtime/pkg/reconciler/claimbinding"
+	"github.com/crossplane/crossplane-runtime/pkg/resource"
+	"github.com/crossplane/crossplane-runtime/pkg/test"
+	databasev1alpha1 "github.com/crossplane/crossplane/apis/database/v1alpha1"
 	"github.com/google/go-cmp/cmp"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/crossplaneio/stack-rook/apis/database/v1alpha1"
-	corev1alpha1 "github.com/crossplaneio/stack-rook/apis/v1alpha1"
+	"github.com/crossplane/stack-rook/apis/database/v1alpha1"
+	corev1alpha1 "github.com/crossplane/stack-rook/apis/v1alpha1"
 )
 
 var _ claimbinding.ManagedConfigurator = claimbinding.ManagedConfiguratorFn(ConfigureYugabyteCluster)
