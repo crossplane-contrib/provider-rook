@@ -32,7 +32,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	databasev1alpha1 "github.com/crossplane/crossplane/apis/database/v1alpha1"
 
-	"github.com/crossplane/stack-rook/apis/database/v1alpha1"
+	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
 )
 
 // A ClaimSchedulingController reconciles PostgreSQLInstance claims that include

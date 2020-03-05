@@ -6,7 +6,7 @@ include ../../../build/makelib/common.mk
 
 # ====================================================================================
 #  Options
-IMAGE = $(BUILD_REGISTRY)/stack-rook-$(ARCH)
+IMAGE = $(BUILD_REGISTRY)/provider-rook-$(ARCH)
 include ../../../build/makelib/image.mk
 
 # ====================================================================================

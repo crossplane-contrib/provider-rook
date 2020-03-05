@@ -37,8 +37,8 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/crossplane/stack-rook/apis/database/v1alpha1"
-	corev1alpha1 "github.com/crossplane/stack-rook/apis/v1alpha1"
+	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
+	corev1alpha1 "github.com/crossplane/provider-rook/apis/v1alpha1"
 )
 
 const (

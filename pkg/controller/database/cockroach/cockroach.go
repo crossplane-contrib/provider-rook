@@ -35,8 +35,8 @@ import (
 	kubev1alpha1 "github.com/crossplane/crossplane/apis/kubernetes/v1alpha1"
 	rookv1alpha1 "github.com/rook/rook/pkg/apis/cockroachdb.rook.io/v1alpha1"
 
-	"github.com/crossplane/stack-rook/apis/database/v1alpha1"
-	"github.com/crossplane/stack-rook/pkg/clients/database/cockroach"
+	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
+	"github.com/crossplane/provider-rook/pkg/clients/database/cockroach"
 )
 
 // Error strings.

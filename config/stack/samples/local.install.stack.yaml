@@ -2,8 +2,8 @@
 apiVersion: stacks.crossplane.io/v1alpha1
 kind: ClusterStackInstall
 metadata:
-  name: stack-rook
+  name: provider-rook
   namespace: rook
 spec:
   source: localhost:5000
-  package: "crossplane/stack-rook"
+  package: "crossplane/provider-rook"
