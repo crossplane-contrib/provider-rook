@@ -1,4 +1,4 @@
-module github.com/crossplane/stack-rook
+module github.com/crossplane/provider-rook
 
 go 1.13
 

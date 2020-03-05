@@ -1,6 +1,6 @@
 # Building and Installing the Crossplane Rook Stack
 
-`stack-rook` is composed of a golang project and can be built directly with standard `golang` tools. We currently support two different platforms for building:
+`provider-rook` is composed of a golang project and can be built directly with standard `golang` tools. We currently support two different platforms for building:
 
 * Linux: most modern distros should work although most testing has been done on Ubuntu
 * Mac: macOS 10.6+ is supported

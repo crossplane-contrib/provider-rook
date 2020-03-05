@@ -26,8 +26,8 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/crossplane/stack-rook/apis/database/v1alpha1"
-	corev1alpha1 "github.com/crossplane/stack-rook/apis/v1alpha1"
+	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
+	corev1alpha1 "github.com/crossplane/provider-rook/apis/v1alpha1"
 )
 
 const (
