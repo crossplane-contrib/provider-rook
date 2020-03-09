@@ -13,8 +13,8 @@ following new functionality:
 * Controllers to provision these resources in a Rook Kubernetes cluster based on
   the users desired state captured in CRDs they create
 * Implementations of Crossplane's [portable resource
-  abstractions](https://crossplane.io/docs/master/running-resources.html),
-  enabling Rook resources to fulfill a user's general need for cloud services
+  abstractions](https://crossplane.io/docs/master/concepts.html), enabling Rook
+  resources to fulfill a user's general need for cloud services
 
 ## Getting Started and Documentation
 
