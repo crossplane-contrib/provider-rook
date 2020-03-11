@@ -17,7 +17,6 @@ spec:
     spec:
       containers:
       - name: "provider-rook-controller"
-        image: "crossplane/provider-rook:master"
         env:
         - name: POD_NAME
           valueFrom:
