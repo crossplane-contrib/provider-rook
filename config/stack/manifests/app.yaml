@@ -1,5 +1,5 @@
 # Human readable title of application.
-title: Crossplane Rook Provider
+title: Rook Provider
 
 overviewShort: The Rook Crossplane provider enables resource management for Rook.
 overview: |-
