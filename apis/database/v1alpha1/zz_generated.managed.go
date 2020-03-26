@@ -43,6 +43,11 @@ func (mg *CockroachCluster) GetCondition(ct runtimev1alpha1.ConditionType) runti
 	return mg.Status.GetCondition(ct)
 }
 
+// GetProviderReference of this CockroachCluster.
+func (mg *CockroachCluster) GetProviderReference() *corev1.ObjectReference {
+	return mg.Spec.ProviderReference
+}
+
 // GetReclaimPolicy of this CockroachCluster.
 func (mg *CockroachCluster) GetReclaimPolicy() runtimev1alpha1.ReclaimPolicy {
 	return mg.Spec.ReclaimPolicy
@@ -71,6 +76,11 @@ func (mg *CockroachCluster) SetClassReference(r *corev1.ObjectReference) {
 // SetConditions of this CockroachCluster.
 func (mg *CockroachCluster) SetConditions(c ...runtimev1alpha1.Condition) {
 	mg.Status.SetConditions(c...)
+}
+
+// SetProviderReference of this CockroachCluster.
+func (mg *CockroachCluster) SetProviderReference(r *corev1.ObjectReference) {
+	mg.Spec.ProviderReference = r
 }
 
 // SetReclaimPolicy of this CockroachCluster.
@@ -103,6 +113,11 @@ func (mg *YugabyteCluster) GetCondition(ct runtimev1alpha1.ConditionType) runtim
 	return mg.Status.GetCondition(ct)
 }
 
+// GetProviderReference of this YugabyteCluster.
+func (mg *YugabyteCluster) GetProviderReference() *corev1.ObjectReference {
+	return mg.Spec.ProviderReference
+}
+
 // GetReclaimPolicy of this YugabyteCluster.
 func (mg *YugabyteCluster) GetReclaimPolicy() runtimev1alpha1.ReclaimPolicy {
 	return mg.Spec.ReclaimPolicy
@@ -131,6 +146,11 @@ func (mg *YugabyteCluster) SetClassReference(r *corev1.ObjectReference) {
 // SetConditions of this YugabyteCluster.
 func (mg *YugabyteCluster) SetConditions(c ...runtimev1alpha1.Condition) {
 	mg.Status.SetConditions(c...)
+}
+
+// SetProviderReference of this YugabyteCluster.
+func (mg *YugabyteCluster) SetProviderReference(r *corev1.ObjectReference) {
+	mg.Spec.ProviderReference = r
 }
 
 // SetReclaimPolicy of this YugabyteCluster.
