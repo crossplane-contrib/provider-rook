@@ -9,4 +9,5 @@ ADD stack /usr/local/bin/crossplane-rook-stack
 COPY stack-package /
 
 EXPOSE 8080
+USER 1001
 ENTRYPOINT ["crossplane-rook-stack"]
