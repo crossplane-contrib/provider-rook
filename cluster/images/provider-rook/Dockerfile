@@ -6,7 +6,7 @@ ARG TINI_VERSION
 
 ADD stack /usr/local/bin/crossplane-rook-stack
 
-COPY stack-package /
+COPY package /
 
 EXPOSE 8080
 USER 1001
