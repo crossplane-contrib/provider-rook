@@ -1,4 +1,4 @@
-# Building and Installing the Crossplane Rook Stack
+# Building and Installing the Crossplane Rook Provider
 
 `provider-rook` is composed of a golang project and can be built directly with standard `golang` tools. We currently support two different platforms for building:
 
@@ -22,7 +22,7 @@ The following tools are need on the host:
 
 ## Build
 
-You can build the Crossplane Rook Stack for the host platform by simply running the command below.
+You can build the Crossplane Rook Provider for the host platform by simply running the command below.
 Building in parallel with the `-j` option is recommended.
 
 ```console
@@ -46,4 +46,4 @@ The first run of `build/run` will build the container itself and could take a fe
 
 ## Install
 
-TBD: Steps to install the Rook stack into a Crossplane cluster
+TBD: Steps to install the Rook provider into a Crossplane cluster
