@@ -9,14 +9,14 @@ metadata:
   name: yugabyteclusters.database.rook.crossplane.io
 spec:
   additionalPrinterColumns:
-  - JSONPath: .status.bindingPhase
-    name: STATUS
+  - JSONPath: .status.conditions[?(@.type=='Ready')].status
+    name: READY
+    type: string
+  - JSONPath: .status.conditions[?(@.type=='Synced')].status
+    name: SYNCED
     type: string
   - JSONPath: .status.state
     name: STATE
-    type: string
-  - JSONPath: .spec.classRef.name
-    name: CLASS
     type: string
   - JSONPath: .metadata.creationTimestamp
     name: AGE
