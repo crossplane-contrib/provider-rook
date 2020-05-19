@@ -6,4 +6,4 @@ overviewShort: "A YugabyteClusterClass is a resource class. It defines the desir
 overview: |
   A YugabyteClusterClass is a resource class. It defines the desired spec of resource claims that use it to dynamically provision a managed resource.
 readme: |
-  Full documentation can be found in the Crossplane [API Reference docs](https://doc.crds.dev/github.com/crossplane/provider-rook/database.rook.crossplane.io_yugabyteclusterclasses.yaml).
+  Full documentation can be found in the Crossplane [API Reference docs](https://doc.crds.dev/github.com/crossplane/provider-rook/config/crd/database.rook.crossplane.io_yugabyteclusterclasses.yaml@v0.7.0).
