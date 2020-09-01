@@ -21,8 +21,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/crossplane/provider-rook/pkg/clients"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+
 	"github.com/pkg/errors"
-	corev1 "k8s.io/api/core/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -31,7 +35,6 @@ import (
 	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
-	kubev1alpha1 "github.com/crossplane/crossplane/apis/kubernetes/v1alpha1"
 	rookv1alpha1 "github.com/rook/rook/pkg/apis/cockroachdb.rook.io/v1alpha1"
 
 	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
@@ -40,14 +43,12 @@ import (
 
 // Error strings.
 const (
-	errGetCockroachProvider       = "cannot get Provider"
-	errGetCockroachProviderSecret = "cannot get Provider Secret"
-	errNewCockroachClient         = "cannot create new Kubernetes client"
-	errNotCockroachCluster        = "managed resource is not an Cockroach cluster"
-	errGetCockroachCluster        = "cannot get Cockroach cluster in target Kubernetes cluster"
-	errCreateCockroachCluster     = "cannot create Cockroach cluster in target Kubernetes cluster"
-	errUpdateCockroachCluster     = "cannot update Cockroach cluster in target Kubernetes cluster"
-	errDeleteCockroachCluster     = "cannot delete Cockroach cluster in target Kubernetes cluster"
+	errNewCockroachClient     = "cannot create new Kubernetes client"
+	errNotCockroachCluster    = "managed resource is not an Cockroach cluster"
+	errGetCockroachCluster    = "cannot get Cockroach cluster in target Kubernetes cluster"
+	errCreateCockroachCluster = "cannot create Cockroach cluster in target Kubernetes cluster"
+	errUpdateCockroachCluster = "cannot update Cockroach cluster in target Kubernetes cluster"
+	errDeleteCockroachCluster = "cannot delete Cockroach cluster in target Kubernetes cluster"
 )
 
 // Controller is responsible for adding the CockroachCluster
@@ -63,34 +64,23 @@ func (c *Controller) SetupWithManager(mgr ctrl.Manager) error {
 		For(&v1alpha1.CockroachCluster{}).
 		Complete(managed.NewReconciler(mgr,
 			resource.ManagedKind(v1alpha1.CockroachClusterGroupVersionKind),
-			managed.WithExternalConnecter(&connecter{client: mgr.GetClient(), newClient: cockroach.NewClient})))
+			managed.WithExternalConnecter(&connecter{client: mgr.GetClient()})))
 }
 
 type connecter struct {
-	client    client.Client
-	newClient func(ctx context.Context, secret *corev1.Secret) (client.Client, error)
+	client client.Client
 }
 
 func (c *connecter) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	i, ok := mg.(*v1alpha1.CockroachCluster)
-	if !ok {
-		return nil, errors.New(errNotCockroachCluster)
-	}
+	scheme := runtime.NewScheme()
+	scheme.AddKnownTypes(rookv1alpha1.SchemeGroupVersion,
+		&rookv1alpha1.Cluster{},
+		&rookv1alpha1.ClusterList{},
+	)
+	metav1.AddToGroupVersion(scheme, rookv1alpha1.SchemeGroupVersion)
 
-	p := &kubev1alpha1.Provider{}
-	n := types.NamespacedName{Name: i.Spec.ProviderReference.Name}
-	if err := c.client.Get(ctx, n, p); err != nil {
-		return nil, errors.Wrap(err, errGetCockroachProvider)
-	}
-
-	s := &corev1.Secret{}
-	n = types.NamespacedName{Namespace: p.Spec.Secret.Namespace, Name: p.Spec.Secret.Name}
-	if err := c.client.Get(ctx, n, s); err != nil {
-		return nil, errors.Wrap(err, errGetCockroachProviderSecret)
-	}
-
-	client, err := c.newClient(ctx, s)
-	return &external{client: client}, errors.Wrap(err, errNewCockroachClient)
+	cl, err := clients.NewClient(ctx, c.client, mg, scheme)
+	return &external{client: cl}, errors.Wrap(err, errNewCockroachClient)
 }
 
 type external struct {

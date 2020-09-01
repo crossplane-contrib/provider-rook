@@ -2,6 +2,8 @@ module github.com/crossplane/provider-rook
 
 go 1.13
 
+replace github.com/crossplane/crossplane => github.com/muvaf/crossplane v0.2.1-0.20200901093743-b633092bf61f
+
 require (
 	github.com/crossplane/crossplane v0.13.0-rc.0.20200901002346-79763d19e144
 	github.com/crossplane/crossplane-runtime v0.9.1-0.20200831142237-1576699ee9ac
