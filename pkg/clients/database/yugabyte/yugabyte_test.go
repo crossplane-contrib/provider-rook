@@ -22,7 +22,6 @@ import (
 	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
 	"github.com/google/go-cmp/cmp"
 	rookv1alpha1 "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
@@ -50,7 +49,7 @@ func yugabyteCluster(im ...yugabyteClusterModifier) *v1alpha1.YugabyteCluster {
 		},
 		Spec: v1alpha1.YugabyteClusterSpec{
 			ResourceSpec: runtimev1alpha1.ResourceSpec{
-				ProviderReference:                &corev1.ObjectReference{Name: providerName},
+				ProviderReference:                &runtimev1alpha1.Reference{Name: providerName},
 				WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: connectionSecretName},
 			},
 			YugabyteClusterParameters: v1alpha1.YugabyteClusterParameters{

@@ -18,44 +18,77 @@ package clients
 
 import (
 	"context"
-	"net/url"
 
 	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
+	"github.com/crossplane/crossplane-runtime/pkg/resource"
+	"github.com/crossplane/crossplane/apis/kubernetes/v1alpha1"
+	"github.com/crossplane/crossplane/apis/kubernetes/v1beta1"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/tools/clientcmd"
+
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// NewClient returns a kubernetes client given a secret with connection
-// information.
-func NewClient(ctx context.Context, s *corev1.Secret, scheme *runtime.Scheme) (client.Client, error) {
+const (
+	errGetProviderConfig     = "cannot get referenced ProviderConfig"
+	errGetProvider           = "cannot get referenced Provider"
+	errGetSecret             = "cannot get referenced credentials secret"
+	errNoRefGiven            = "neither providerConfigRef nor providerRef is given"
+	errConstructClientConfig = "cannot construct a client config from data in the credentials secret"
+	errConstructRestConfig   = "cannot construct a rest config from client config"
+	errNewClient             = "cannot create a new controller-runtime client"
+)
 
-	u, err := url.Parse(string(s.Data[runtimev1alpha1.ResourceCredentialsSecretEndpointKey]))
-	if err != nil {
-		return nil, errors.Wrapf(err, "cannot parse Kubernetes endpoint as URL")
+// NewClient returns a kubernetes client with the information in provider config
+// reference of given managed resource. It assumes the referenced ProviderConfig
+// is of type native Kubernetes ProviderConfig.
+func NewClient(ctx context.Context, kube client.Client, mg resource.Managed, scheme *runtime.Scheme) (client.Client, error) { // nolint:gocyclo
+	pc := &v1beta1.ProviderConfig{}
+	switch {
+	case mg.GetProviderConfigReference() != nil && mg.GetProviderConfigReference().Name != "":
+		nn := types.NamespacedName{Name: mg.GetProviderConfigReference().Name}
+		if err := kube.Get(ctx, nn, pc); err != nil {
+			return nil, errors.Wrap(err, errGetProviderConfig)
+		}
+	case mg.GetProviderReference() != nil && mg.GetProviderReference().Name != "":
+		nn := types.NamespacedName{Name: mg.GetProviderReference().Name}
+		p := &v1alpha1.Provider{}
+		if err := kube.Get(ctx, nn, p); err != nil {
+			return nil, errors.Wrap(err, errGetProvider)
+		}
+		p.ObjectMeta.DeepCopyInto(&pc.ObjectMeta)
+		pc.Spec.CredentialsSecretRef = runtimev1alpha1.SecretKeySelector{
+			SecretReference: runtimev1alpha1.SecretReference{
+				Name:      p.Spec.Secret.Name,
+				Namespace: p.Spec.Secret.Namespace,
+			},
+			Key: runtimev1alpha1.ResourceCredentialsSecretKubeconfigKey,
+		}
+	default:
+		return nil, errors.New(errNoRefGiven)
 	}
 
-	config := &rest.Config{
-		Host:     u.String(),
-		Username: string(s.Data[runtimev1alpha1.ResourceCredentialsSecretUserKey]),
-		Password: string(s.Data[runtimev1alpha1.ResourceCredentialsSecretPasswordKey]),
-		TLSClientConfig: rest.TLSClientConfig{
-			// This field's godoc claims clients will use 'the hostname used to
-			// contact the server' when it is left unset. In practice clients
-			// appear to use the URL, including scheme and port.
-			ServerName: u.Hostname(),
-			CAData:     s.Data[runtimev1alpha1.ResourceCredentialsSecretCAKey],
-			CertData:   s.Data[runtimev1alpha1.ResourceCredentialsSecretClientCertKey],
-			KeyData:    s.Data[runtimev1alpha1.ResourceCredentialsSecretClientKeyKey],
-		},
-		BearerToken: string(s.Data[runtimev1alpha1.ResourceCredentialsSecretTokenKey]),
+	s := &corev1.Secret{}
+	nn := types.NamespacedName{Name: pc.Spec.CredentialsSecretRef.Name, Namespace: pc.Spec.CredentialsSecretRef.Namespace}
+	if err := kube.Get(ctx, nn, s); err != nil {
+		return nil, errors.Wrap(err, errGetSecret)
 	}
 
-	kc, err := client.New(config, client.Options{Scheme: scheme})
+	cfg, err := clientcmd.NewClientConfigFromBytes(s.Data[pc.Spec.CredentialsSecretRef.Key])
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot create Kubernetes client")
+		return nil, errors.Wrap(err, errConstructClientConfig)
+	}
+	restCfg, err := cfg.ClientConfig()
+	if err != nil {
+		return nil, errors.Wrap(err, errConstructRestConfig)
+	}
+
+	kc, err := client.New(restCfg, client.Options{Scheme: scheme})
+	if err != nil {
+		return nil, errors.Wrap(err, errNewClient)
 	}
 
 	return kc, nil

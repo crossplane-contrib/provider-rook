@@ -22,33 +22,31 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	corev1 "k8s.io/api/core/v1"
+	rookv1alpha1 "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
-	"github.com/crossplane/crossplane-runtime/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
-	kubev1alpha1 "github.com/crossplane/crossplane/apis/kubernetes/v1alpha1"
-	rookv1alpha1 "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1"
 
 	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
+	"github.com/crossplane/provider-rook/pkg/clients"
 	"github.com/crossplane/provider-rook/pkg/clients/database/yugabyte"
 )
 
 // Error strings.
 const (
-	errGetYugabyteProvider       = "cannot get Provider"
-	errGetYugabyteProviderSecret = "cannot get Provider Secret"
-	errNewYugabyteClient         = "cannot create new Kubernetes client"
-	errNotYugabyteCluster        = "managed resource is not an Yugabyte cluster"
-	errGetYugabyteCluster        = "cannot get Yugabyte cluster in target Kubernetes cluster"
-	errCreateYugabyteCluster     = "cannot create Yugabyte cluster in target Kubernetes cluster"
-	errUpdateYugabyteCluster     = "cannot update Yugabyte cluster in target Kubernetes cluster"
-	errDeleteYugabyteCluster     = "cannot delete Yugabyte cluster in target Kubernetes cluster"
+	errNewYugabyteClient     = "cannot create new Kubernetes client"
+	errNotYugabyteCluster    = "managed resource is not an Yugabyte cluster"
+	errGetYugabyteCluster    = "cannot get Yugabyte cluster in target Kubernetes cluster"
+	errCreateYugabyteCluster = "cannot create Yugabyte cluster in target Kubernetes cluster"
+	errUpdateYugabyteCluster = "cannot update Yugabyte cluster in target Kubernetes cluster"
+	errDeleteYugabyteCluster = "cannot delete Yugabyte cluster in target Kubernetes cluster"
 )
 
 // Controller is responsible for adding the YugabyteCluster
@@ -64,34 +62,24 @@ func (c *Controller) SetupWithManager(mgr ctrl.Manager) error {
 		For(&v1alpha1.YugabyteCluster{}).
 		Complete(managed.NewReconciler(mgr,
 			resource.ManagedKind(v1alpha1.YugabyteClusterGroupVersionKind),
-			managed.WithExternalConnecter(&connecter{client: mgr.GetClient(), newClient: yugabyte.NewClient})))
+			managed.WithExternalConnecter(&connecter{client: mgr.GetClient()})))
 }
 
 type connecter struct {
-	client    client.Client
-	newClient func(ctx context.Context, secret *corev1.Secret) (client.Client, error)
+	client client.Client
 }
 
 func (c *connecter) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	i, ok := mg.(*v1alpha1.YugabyteCluster)
-	if !ok {
-		return nil, errors.New(errNotYugabyteCluster)
-	}
+	scheme := runtime.NewScheme()
+	scheme.AddKnownTypes(rookv1alpha1.SchemeGroupVersion,
+		&rookv1alpha1.YBCluster{},
+		&rookv1alpha1.YBClusterList{},
+	)
 
-	p := &kubev1alpha1.Provider{}
-	n := meta.NamespacedNameOf(i.Spec.ProviderReference)
-	if err := c.client.Get(ctx, n, p); err != nil {
-		return nil, errors.Wrap(err, errGetYugabyteProvider)
-	}
+	metav1.AddToGroupVersion(scheme, rookv1alpha1.SchemeGroupVersion)
 
-	s := &corev1.Secret{}
-	n = types.NamespacedName{Namespace: p.Spec.Secret.Namespace, Name: p.Spec.Secret.Name}
-	if err := c.client.Get(ctx, n, s); err != nil {
-		return nil, errors.Wrap(err, errGetYugabyteProviderSecret)
-	}
-
-	client, err := c.newClient(ctx, s)
-	return &external{client: client}, errors.Wrap(err, errNewYugabyteClient)
+	cl, err := clients.NewClient(ctx, c.client, mg, scheme)
+	return &external{client: cl}, errors.Wrap(err, errNewYugabyteClient)
 }
 
 type external struct {

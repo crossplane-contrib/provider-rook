@@ -91,7 +91,7 @@ func TestConfigureYugabyteCluster(t *testing.T) {
 				cs: &v1alpha1.YugabyteClusterClass{
 					SpecTemplate: v1alpha1.YugabyteClusterClassSpecTemplate{
 						ClassSpecTemplate: runtimev1alpha1.ClassSpecTemplate{
-							ProviderReference: &corev1.ObjectReference{Name: providerName},
+							ProviderReference: runtimev1alpha1.Reference{Name: providerName},
 							ReclaimPolicy:     runtimev1alpha1.ReclaimDelete,
 						},
 						YugabyteClusterParameters: params,
@@ -103,7 +103,7 @@ func TestConfigureYugabyteCluster(t *testing.T) {
 				mg: &v1alpha1.YugabyteCluster{
 					Spec: v1alpha1.YugabyteClusterSpec{
 						ResourceSpec: runtimev1alpha1.ResourceSpec{
-							ProviderReference:                &corev1.ObjectReference{Name: providerName},
+							ProviderReference:                &runtimev1alpha1.Reference{Name: providerName},
 							ReclaimPolicy:                    runtimev1alpha1.ReclaimDelete,
 							WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: string(claimUID)},
 						},
