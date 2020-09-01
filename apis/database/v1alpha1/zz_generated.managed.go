@@ -43,8 +43,21 @@ func (mg *CockroachCluster) GetCondition(ct runtimev1alpha1.ConditionType) runti
 	return mg.Status.GetCondition(ct)
 }
 
-// GetProviderReference of this CockroachCluster.
-func (mg *CockroachCluster) GetProviderReference() *corev1.ObjectReference {
+// GetDeletionPolicy of this CockroachCluster.
+func (mg *CockroachCluster) GetDeletionPolicy() runtimev1alpha1.DeletionPolicy {
+	return mg.Spec.DeletionPolicy
+}
+
+// GetProviderConfigReference of this CockroachCluster.
+func (mg *CockroachCluster) GetProviderConfigReference() *runtimev1alpha1.Reference {
+	return mg.Spec.ProviderConfigReference
+}
+
+/*
+GetProviderReference of this CockroachCluster.
+Deprecated: Use GetProviderConfigReference.
+*/
+func (mg *CockroachCluster) GetProviderReference() *runtimev1alpha1.Reference {
 	return mg.Spec.ProviderReference
 }
 
@@ -78,8 +91,21 @@ func (mg *CockroachCluster) SetConditions(c ...runtimev1alpha1.Condition) {
 	mg.Status.SetConditions(c...)
 }
 
-// SetProviderReference of this CockroachCluster.
-func (mg *CockroachCluster) SetProviderReference(r *corev1.ObjectReference) {
+// SetDeletionPolicy of this CockroachCluster.
+func (mg *CockroachCluster) SetDeletionPolicy(r runtimev1alpha1.DeletionPolicy) {
+	mg.Spec.DeletionPolicy = r
+}
+
+// SetProviderConfigReference of this CockroachCluster.
+func (mg *CockroachCluster) SetProviderConfigReference(r *runtimev1alpha1.Reference) {
+	mg.Spec.ProviderConfigReference = r
+}
+
+/*
+SetProviderReference of this CockroachCluster.
+Deprecated: Use SetProviderConfigReference.
+*/
+func (mg *CockroachCluster) SetProviderReference(r *runtimev1alpha1.Reference) {
 	mg.Spec.ProviderReference = r
 }
 
@@ -113,8 +139,21 @@ func (mg *YugabyteCluster) GetCondition(ct runtimev1alpha1.ConditionType) runtim
 	return mg.Status.GetCondition(ct)
 }
 
-// GetProviderReference of this YugabyteCluster.
-func (mg *YugabyteCluster) GetProviderReference() *corev1.ObjectReference {
+// GetDeletionPolicy of this YugabyteCluster.
+func (mg *YugabyteCluster) GetDeletionPolicy() runtimev1alpha1.DeletionPolicy {
+	return mg.Spec.DeletionPolicy
+}
+
+// GetProviderConfigReference of this YugabyteCluster.
+func (mg *YugabyteCluster) GetProviderConfigReference() *runtimev1alpha1.Reference {
+	return mg.Spec.ProviderConfigReference
+}
+
+/*
+GetProviderReference of this YugabyteCluster.
+Deprecated: Use GetProviderConfigReference.
+*/
+func (mg *YugabyteCluster) GetProviderReference() *runtimev1alpha1.Reference {
 	return mg.Spec.ProviderReference
 }
 
@@ -148,8 +187,21 @@ func (mg *YugabyteCluster) SetConditions(c ...runtimev1alpha1.Condition) {
 	mg.Status.SetConditions(c...)
 }
 
-// SetProviderReference of this YugabyteCluster.
-func (mg *YugabyteCluster) SetProviderReference(r *corev1.ObjectReference) {
+// SetDeletionPolicy of this YugabyteCluster.
+func (mg *YugabyteCluster) SetDeletionPolicy(r runtimev1alpha1.DeletionPolicy) {
+	mg.Spec.DeletionPolicy = r
+}
+
+// SetProviderConfigReference of this YugabyteCluster.
+func (mg *YugabyteCluster) SetProviderConfigReference(r *runtimev1alpha1.Reference) {
+	mg.Spec.ProviderConfigReference = r
+}
+
+/*
+SetProviderReference of this YugabyteCluster.
+Deprecated: Use SetProviderConfigReference.
+*/
+func (mg *YugabyteCluster) SetProviderReference(r *runtimev1alpha1.Reference) {
 	mg.Spec.ProviderReference = r
 }
 

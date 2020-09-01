@@ -51,7 +51,7 @@ func cockroachCluster(im ...cockroachClusterModifier) *v1alpha1.CockroachCluster
 		},
 		Spec: v1alpha1.CockroachClusterSpec{
 			ResourceSpec: runtimev1alpha1.ResourceSpec{
-				ProviderReference:                &corev1.ObjectReference{Name: providerName},
+				ProviderReference:                &runtimev1alpha1.Reference{Name: providerName},
 				WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: connectionSecretName},
 			},
 			CockroachClusterParameters: v1alpha1.CockroachClusterParameters{

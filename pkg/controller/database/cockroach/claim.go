@@ -147,7 +147,7 @@ func ConfigureCockroachCluster(_ context.Context, cm resource.Claim, cs resource
 		Name:      string(cm.GetUID()),
 	}
 	m.Spec.CockroachClusterParameters = c.SpecTemplate.CockroachClusterParameters
-	m.Spec.ProviderReference = c.SpecTemplate.ProviderReference
+	m.Spec.ProviderReference = c.SpecTemplate.ProviderReference.DeepCopy()
 	m.Spec.ReclaimPolicy = c.SpecTemplate.ReclaimPolicy
 
 	return nil

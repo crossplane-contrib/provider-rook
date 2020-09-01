@@ -103,7 +103,7 @@ func TestConfigureCockroachCluster(t *testing.T) {
 				cs: &v1alpha1.CockroachClusterClass{
 					SpecTemplate: v1alpha1.CockroachClusterClassSpecTemplate{
 						ClassSpecTemplate: runtimev1alpha1.ClassSpecTemplate{
-							ProviderReference: &corev1.ObjectReference{Name: providerName},
+							ProviderReference: runtimev1alpha1.Reference{Name: providerName},
 							ReclaimPolicy:     runtimev1alpha1.ReclaimDelete,
 						},
 						CockroachClusterParameters: params,
@@ -115,7 +115,7 @@ func TestConfigureCockroachCluster(t *testing.T) {
 				mg: &v1alpha1.CockroachCluster{
 					Spec: v1alpha1.CockroachClusterSpec{
 						ResourceSpec: runtimev1alpha1.ResourceSpec{
-							ProviderReference:                &corev1.ObjectReference{Name: providerName},
+							ProviderReference:                &runtimev1alpha1.Reference{Name: providerName},
 							ReclaimPolicy:                    runtimev1alpha1.ReclaimDelete,
 							WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: string(claimUID)},
 						},

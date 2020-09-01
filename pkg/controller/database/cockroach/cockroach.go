@@ -29,7 +29,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
-	"github.com/crossplane/crossplane-runtime/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	kubev1alpha1 "github.com/crossplane/crossplane/apis/kubernetes/v1alpha1"
@@ -79,7 +78,7 @@ func (c *connecter) Connect(ctx context.Context, mg resource.Managed) (managed.E
 	}
 
 	p := &kubev1alpha1.Provider{}
-	n := meta.NamespacedNameOf(i.Spec.ProviderReference)
+	n := types.NamespacedName{Name: i.Spec.ProviderReference.Name}
 	if err := c.client.Get(ctx, n, p); err != nil {
 		return nil, errors.Wrap(err, errGetCockroachProvider)
 	}

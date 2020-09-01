@@ -147,7 +147,7 @@ func ConfigureYugabyteCluster(_ context.Context, cm resource.Claim, cs resource.
 		Name:      string(cm.GetUID()),
 	}
 	m.Spec.YugabyteClusterParameters = c.SpecTemplate.YugabyteClusterParameters
-	m.Spec.ProviderReference = c.SpecTemplate.ProviderReference
+	m.Spec.ProviderReference = c.SpecTemplate.ProviderReference.DeepCopy()
 	m.Spec.ReclaimPolicy = c.SpecTemplate.ReclaimPolicy
 
 	return nil

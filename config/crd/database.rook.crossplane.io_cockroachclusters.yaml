@@ -39,14 +39,10 @@ spec:
       description: A CockroachCluster configures a Rook 'clusters.cockroachdb.rook.io'
       properties:
         apiVersion:
-          description: 'APIVersion defines the versioned schema of this representation
-            of an object. Servers should convert recognized schemas to the latest
-            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
           type: string
         kind:
-          description: 'Kind is a string value representing the REST resource this
-            object represents. Servers may infer this from the endpoint the client
-            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
           type: string
         metadata:
           type: object
@@ -54,26 +50,13 @@ spec:
           description: A CockroachClusterSpec defines the desired state of a CockroachCluster.
           properties:
             claimRef:
-              description: ClaimReference specifies the resource claim to which this
-                managed resource will be bound. ClaimReference is set automatically
-                during dynamic provisioning. Crossplane does not currently support
-                setting this field manually, per https://github.com/crossplane/crossplane-runtime/issues/19
+              description: ClaimReference specifies the resource claim to which this managed resource will be bound. ClaimReference is set automatically during dynamic provisioning. Deprecated. See https://github.com/crossplane/crossplane/issues/1670
               properties:
                 apiVersion:
                   description: API version of the referent.
                   type: string
                 fieldPath:
-                  description: 'If referring to a piece of an object instead of an
-                    entire object, this string should contain a valid JSON/Go field
-                    access statement, such as desiredState.manifest.containers[2].
-                    For example, if the object reference is to a container within
-                    a pod, this would take on a value like: "spec.containers{name}"
-                    (where "name" refers to the name of the container that triggered
-                    the event) or if no container name is specified "spec.containers[2]"
-                    (container with index 2 in this pod). This syntax is chosen only
-                    to have some well-defined way of referencing a part of an object.
-                    TODO: this design is not final and this field is subject to change
-                    in the future.'
+                  description: 'If referring to a piece of an object instead of an entire object, this string should contain a valid JSON/Go field access statement, such as desiredState.manifest.containers[2]. For example, if the object reference is to a container within a pod, this would take on a value like: "spec.containers{name}" (where "name" refers to the name of the container that triggered the event) or if no container name is specified "spec.containers[2]" (container with index 2 in this pod). This syntax is chosen only to have some well-defined way of referencing a part of an object. TODO: this design is not final and this field is subject to change in the future.'
                   type: string
                 kind:
                   description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
@@ -85,33 +68,20 @@ spec:
                   description: 'Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                   type: string
                 resourceVersion:
-                  description: 'Specific resourceVersion to which this reference is
-                    made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency'
+                  description: 'Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency'
                   type: string
                 uid:
                   description: 'UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids'
                   type: string
               type: object
             classRef:
-              description: ClassReference specifies the resource class that was used
-                to dynamically provision this managed resource, if any. Crossplane
-                does not currently support setting this field manually, per https://github.com/crossplane/crossplane-runtime/issues/20
+              description: ClassReference specifies the resource class that was used to dynamically provision this managed resource, if any. Deprecated. See https://github.com/crossplane/crossplane/issues/1670
               properties:
                 apiVersion:
                   description: API version of the referent.
                   type: string
                 fieldPath:
-                  description: 'If referring to a piece of an object instead of an
-                    entire object, this string should contain a valid JSON/Go field
-                    access statement, such as desiredState.manifest.containers[2].
-                    For example, if the object reference is to a container within
-                    a pod, this would take on a value like: "spec.containers{name}"
-                    (where "name" refers to the name of the container that triggered
-                    the event) or if no container name is specified "spec.containers[2]"
-                    (container with index 2 in this pod). This syntax is chosen only
-                    to have some well-defined way of referencing a part of an object.
-                    TODO: this design is not final and this field is subject to change
-                    in the future.'
+                  description: 'If referring to a piece of an object instead of an entire object, this string should contain a valid JSON/Go field access statement, such as desiredState.manifest.containers[2]. For example, if the object reference is to a container within a pod, this would take on a value like: "spec.containers{name}" (where "name" refers to the name of the container that triggered the event) or if no container name is specified "spec.containers[2]" (container with index 2 in this pod). This syntax is chosen only to have some well-defined way of referencing a part of an object. TODO: this design is not final and this field is subject to change in the future.'
                   type: string
                 kind:
                   description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
@@ -123,22 +93,25 @@ spec:
                   description: 'Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                   type: string
                 resourceVersion:
-                  description: 'Specific resourceVersion to which this reference is
-                    made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency'
+                  description: 'Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency'
                   type: string
                 uid:
                   description: 'UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids'
                   type: string
               type: object
+            deletionPolicy:
+              description: DeletionPolicy specifies what will happen to the underlying external when this managed resource is deleted - either "Delete" or "Orphan" the external resource. The "Delete" policy is the default when no policy is specified.
+              enum:
+              - Orphan
+              - Delete
+              type: string
             forProvider:
-              description: A CockroachClusterParameters defines the desired state
-                of a CockroachCluster.
+              description: A CockroachClusterParameters defines the desired state of a CockroachCluster.
               properties:
                 annotations:
                   additionalProperties:
                     type: string
-                  description: The annotations-related configuration to add/set on
-                    each Pod related object.
+                  description: The annotations-related configuration to add/set on each Pod related object.
                   type: object
                 cachePercent:
                   type: integer
@@ -149,12 +122,10 @@ spec:
                 namespace:
                   type: string
                 network:
-                  description: NetworkSpec describes network related settings of the
-                    cluster
+                  description: NetworkSpec describes network related settings of the cluster
                   properties:
                     ports:
-                      description: Set of named ports that can be configured for this
-                        resource
+                      description: Set of named ports that can be configured for this resource
                       items:
                         description: PortSpec is named port
                         properties:
@@ -169,129 +140,78 @@ spec:
                       type: array
                   type: object
                 scope:
-                  description: StorageScopeSpec defines scope or boundaries of storage
-                    that the cluster will use for its underlying storage.
+                  description: StorageScopeSpec defines scope or boundaries of storage that the cluster will use for its underlying storage.
                   properties:
                     nodeCount:
                       type: integer
                     volumeClaimTemplates:
                       description: PersistentVolumeClaims to use as storage
                       items:
-                        description: PersistentVolumeClaim is a user's request for
-                          and claim to a persistent volume
+                        description: PersistentVolumeClaim is a user's request for and claim to a persistent volume
                         properties:
                           apiVersion:
-                            description: 'APIVersion defines the versioned schema
-                              of this representation of an object. Servers should
-                              convert recognized schemas to the latest internal value,
-                              and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+                            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
                             type: string
                           kind:
-                            description: 'Kind is a string value representing the
-                              REST resource this object represents. Servers may infer
-                              this from the endpoint the client submits requests to.
-                              Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
                             type: string
                           metadata:
-                            description: 'Standard object''s metadata. More info:
-                              https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata'
+                            description: 'Standard object''s metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata'
                             type: object
                           spec:
-                            description: 'Spec defines the desired characteristics
-                              of a volume requested by a pod author. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims'
+                            description: 'Spec defines the desired characteristics of a volume requested by a pod author. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims'
                             properties:
                               accessModes:
-                                description: 'AccessModes contains the desired access
-                                  modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1'
+                                description: 'AccessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1'
                                 items:
                                   type: string
                                 type: array
                               dataSource:
-                                description: 'This field can be used to specify either:
-                                  * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot
-                                  - Beta) * An existing PVC (PersistentVolumeClaim)
-                                  * An existing custom resource/object that implements
-                                  data population (Alpha) In order to use VolumeSnapshot
-                                  object types, the appropriate feature gate must
-                                  be enabled (VolumeSnapshotDataSource or AnyVolumeDataSource)
-                                  If the provisioner or an external controller can
-                                  support the specified data source, it will create
-                                  a new volume based on the contents of the specified
-                                  data source. If the specified data source is not
-                                  supported, the volume will not be created and the
-                                  failure will be reported as an event. In the future,
-                                  we plan to support more data source types and the
-                                  behavior of the provisioner may change.'
+                                description: 'This field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot - Beta) * An existing PVC (PersistentVolumeClaim) * An existing custom resource/object that implements data population (Alpha) In order to use VolumeSnapshot object types, the appropriate feature gate must be enabled (VolumeSnapshotDataSource or AnyVolumeDataSource) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. If the specified data source is not supported, the volume will not be created and the failure will be reported as an event. In the future, we plan to support more data source types and the behavior of the provisioner may change.'
                                 properties:
                                   apiGroup:
-                                    description: APIGroup is the group for the resource
-                                      being referenced. If APIGroup is not specified,
-                                      the specified Kind must be in the core API group.
-                                      For any other third-party types, APIGroup is
-                                      required.
+                                    description: APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.
                                     type: string
                                   kind:
-                                    description: Kind is the type of resource being
-                                      referenced
+                                    description: Kind is the type of resource being referenced
                                     type: string
                                   name:
-                                    description: Name is the name of resource being
-                                      referenced
+                                    description: Name is the name of resource being referenced
                                     type: string
                                 required:
                                 - kind
                                 - name
                                 type: object
                               resources:
-                                description: 'Resources represents the minimum resources
-                                  the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources'
+                                description: 'Resources represents the minimum resources the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources'
                                 properties:
                                   limits:
                                     additionalProperties:
                                       type: string
-                                    description: 'Limits describes the maximum amount
-                                      of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                                    description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
                                     type: object
                                   requests:
                                     additionalProperties:
                                       type: string
-                                    description: 'Requests describes the minimum amount
-                                      of compute resources required. If Requests is
-                                      omitted for a container, it defaults to Limits
-                                      if that is explicitly specified, otherwise to
-                                      an implementation-defined value. More info:
-                                      https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                                    description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
                                     type: object
                                 type: object
                               selector:
-                                description: A label query over volumes to consider
-                                  for binding.
+                                description: A label query over volumes to consider for binding.
                                 properties:
                                   matchExpressions:
-                                    description: matchExpressions is a list of label
-                                      selector requirements. The requirements are
-                                      ANDed.
+                                    description: matchExpressions is a list of label selector requirements. The requirements are ANDed.
                                     items:
-                                      description: A label selector requirement is
-                                        a selector that contains values, a key, and
-                                        an operator that relates the key and values.
+                                      description: A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
                                       properties:
                                         key:
-                                          description: key is the label key that the
-                                            selector applies to.
+                                          description: key is the label key that the selector applies to.
                                           type: string
                                         operator:
-                                          description: operator represents a key's
-                                            relationship to a set of values. Valid
-                                            operators are In, NotIn, Exists and DoesNotExist.
+                                          description: operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
                                           type: string
                                         values:
-                                          description: values is an array of string
-                                            values. If the operator is In or NotIn,
-                                            the values array must be non-empty. If
-                                            the operator is Exists or DoesNotExist,
-                                            the values array must be empty. This array
-                                            is replaced during a strategic merge patch.
+                                          description: values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
                                           items:
                                             type: string
                                           type: array
@@ -303,79 +223,55 @@ spec:
                                   matchLabels:
                                     additionalProperties:
                                       type: string
-                                    description: matchLabels is a map of {key,value}
-                                      pairs. A single {key,value} in the matchLabels
-                                      map is equivalent to an element of matchExpressions,
-                                      whose key field is "key", the operator is "In",
-                                      and the values array contains only "value".
-                                      The requirements are ANDed.
+                                    description: matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
                                     type: object
                                 type: object
                               storageClassName:
-                                description: 'Name of the StorageClass required by
-                                  the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1'
+                                description: 'Name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1'
                                 type: string
                               volumeMode:
-                                description: volumeMode defines what type of volume
-                                  is required by the claim. Value of Filesystem is
-                                  implied when not included in claim spec.
+                                description: volumeMode defines what type of volume is required by the claim. Value of Filesystem is implied when not included in claim spec.
                                 type: string
                               volumeName:
-                                description: VolumeName is the binding reference to
-                                  the PersistentVolume backing this claim.
+                                description: VolumeName is the binding reference to the PersistentVolume backing this claim.
                                 type: string
                             type: object
                           status:
-                            description: 'Status represents the current information/status
-                              of a persistent volume claim. Read-only. More info:
-                              https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims'
+                            description: 'Status represents the current information/status of a persistent volume claim. Read-only. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims'
                             properties:
                               accessModes:
-                                description: 'AccessModes contains the actual access
-                                  modes the volume backing the PVC has. More info:
-                                  https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1'
+                                description: 'AccessModes contains the actual access modes the volume backing the PVC has. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1'
                                 items:
                                   type: string
                                 type: array
                               capacity:
                                 additionalProperties:
                                   type: string
-                                description: Represents the actual resources of the
-                                  underlying volume.
+                                description: Represents the actual resources of the underlying volume.
                                 type: object
                               conditions:
-                                description: Current Condition of persistent volume
-                                  claim. If underlying persistent volume is being
-                                  resized then the Condition will be set to 'ResizeStarted'.
+                                description: Current Condition of persistent volume claim. If underlying persistent volume is being resized then the Condition will be set to 'ResizeStarted'.
                                 items:
-                                  description: PersistentVolumeClaimCondition contails
-                                    details about state of pvc
+                                  description: PersistentVolumeClaimCondition contails details about state of pvc
                                   properties:
                                     lastProbeTime:
                                       description: Last time we probed the condition.
                                       format: date-time
                                       type: string
                                     lastTransitionTime:
-                                      description: Last time the condition transitioned
-                                        from one status to another.
+                                      description: Last time the condition transitioned from one status to another.
                                       format: date-time
                                       type: string
                                     message:
-                                      description: Human-readable message indicating
-                                        details about last transition.
+                                      description: Human-readable message indicating details about last transition.
                                       type: string
                                     reason:
-                                      description: Unique, this should be a short,
-                                        machine understandable string that gives the
-                                        reason for condition's last transition. If
-                                        it reports "ResizeStarted" that means the
-                                        underlying persistent volume is being resized.
+                                      description: Unique, this should be a short, machine understandable string that gives the reason for condition's last transition. If it reports "ResizeStarted" that means the underlying persistent volume is being resized.
                                       type: string
                                     status:
                                       type: string
                                     type:
-                                      description: PersistentVolumeClaimConditionType
-                                        is a valid value of PersistentVolumeClaimCondition.Type
+                                      description: PersistentVolumeClaimConditionType is a valid value of PersistentVolumeClaimCondition.Type
                                       type: string
                                   required:
                                   - status
@@ -383,8 +279,7 @@ spec:
                                   type: object
                                 type: array
                               phase:
-                                description: Phase represents the current phase of
-                                  PersistentVolumeClaim.
+                                description: Phase represents the current phase of PersistentVolumeClaim.
                                 type: string
                             type: object
                         type: object
@@ -396,64 +291,32 @@ spec:
               - name
               - namespace
               type: object
-            providerRef:
-              description: ProviderReference specifies the provider that will be used
-                to create, observe, update, and delete this managed resource.
+            providerConfigRef:
+              description: ProviderConfigReference specifies how the provider that will be used to create, observe, update, and delete this managed resource should be configured.
               properties:
-                apiVersion:
-                  description: API version of the referent.
-                  type: string
-                fieldPath:
-                  description: 'If referring to a piece of an object instead of an
-                    entire object, this string should contain a valid JSON/Go field
-                    access statement, such as desiredState.manifest.containers[2].
-                    For example, if the object reference is to a container within
-                    a pod, this would take on a value like: "spec.containers{name}"
-                    (where "name" refers to the name of the container that triggered
-                    the event) or if no container name is specified "spec.containers[2]"
-                    (container with index 2 in this pod). This syntax is chosen only
-                    to have some well-defined way of referencing a part of an object.
-                    TODO: this design is not final and this field is subject to change
-                    in the future.'
-                  type: string
-                kind:
-                  description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
-                  type: string
                 name:
-                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                  description: Name of the referenced object.
                   type: string
-                namespace:
-                  description: 'Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+              required:
+              - name
+              type: object
+            providerRef:
+              description: 'ProviderReference specifies the provider that will be used to create, observe, update, and delete this managed resource. Deprecated: Please use ProviderConfigReference, i.e. `providerConfigRef`'
+              properties:
+                name:
+                  description: Name of the referenced object.
                   type: string
-                resourceVersion:
-                  description: 'Specific resourceVersion to which this reference is
-                    made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency'
-                  type: string
-                uid:
-                  description: 'UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids'
-                  type: string
+              required:
+              - name
               type: object
             reclaimPolicy:
-              description: ReclaimPolicy specifies what will happen to this managed
-                resource when its resource claim is deleted, and what will happen
-                to the underlying external resource when the managed resource is deleted.
-                The "Delete" policy causes the managed resource to be deleted when
-                its bound resource claim is deleted, and in turn causes the external
-                resource to be deleted when its managed resource is deleted. The "Retain"
-                policy causes the managed resource to be retained, in binding phase
-                "Released", when its resource claim is deleted, and in turn causes
-                the external resource to be retained when its managed resource is
-                deleted. The "Retain" policy is used when no policy is specified.
+              description: "ReclaimPolicy specifies what will happen to this managed resource when its resource claim is deleted, and what will happen to the underlying external resource when the managed resource is deleted. The \"Delete\" policy causes the managed resource to be deleted when its bound resource claim is deleted, and in turn causes the external resource to be deleted when its managed resource is deleted. The \"Retain\" policy causes the managed resource to be retained, in binding phase \"Released\", when its resource claim is deleted, and in turn causes the external resource to be retained when its managed resource is deleted. The \"Delete\" policy is used when no policy is specified. \n Deprecated. DeletionPolicy takes precedence when both are set. See https://github.com/crossplane/crossplane-runtime/issues/179."
               enum:
               - Retain
               - Delete
               type: string
             writeConnectionSecretToRef:
-              description: WriteConnectionSecretToReference specifies the namespace
-                and name of a Secret to which any connection details for this managed
-                resource should be written. Connection details frequently include
-                the endpoint, username, and password required to connect to the managed
-                resource.
+              description: WriteConnectionSecretToReference specifies the namespace and name of a Secret to which any connection details for this managed resource should be written. Connection details frequently include the endpoint, username, and password required to connect to the managed resource.
               properties:
                 name:
                   description: Name of the secret.
@@ -467,17 +330,12 @@ spec:
               type: object
           required:
           - forProvider
-          - providerRef
           type: object
         status:
           description: A CockroachClusterStatus defines the current state of a CockroachCluster.
           properties:
             bindingPhase:
-              description: Phase represents the binding phase of a managed resource
-                or claim. Unbindable resources cannot be bound, typically because
-                they are currently unavailable, or still being created. Unbound resource
-                are available for binding, and Bound resources have successfully bound
-                to another resource.
+              description: Phase represents the binding phase of a managed resource or claim. Unbindable resources cannot be bound, typically because they are currently unavailable, or still being created. Unbound resource are available for binding, and Bound resources have successfully bound to another resource. Deprecated. See https://github.com/crossplane/crossplane/issues/1670
               enum:
               - Unbindable
               - Unbound
@@ -490,25 +348,20 @@ spec:
                 description: A Condition that may apply to a resource.
                 properties:
                   lastTransitionTime:
-                    description: LastTransitionTime is the last time this condition
-                      transitioned from one status to another.
+                    description: LastTransitionTime is the last time this condition transitioned from one status to another.
                     format: date-time
                     type: string
                   message:
-                    description: A Message containing details about this condition's
-                      last transition from one status to another, if any.
+                    description: A Message containing details about this condition's last transition from one status to another, if any.
                     type: string
                   reason:
-                    description: A Reason for this condition's last transition from
-                      one status to another.
+                    description: A Reason for this condition's last transition from one status to another.
                     type: string
                   status:
-                    description: Status of this condition; is it currently True, False,
-                      or Unknown?
+                    description: Status of this condition; is it currently True, False, or Unknown?
                     type: string
                   type:
-                    description: Type of this condition. At most one of each condition
-                      type may apply to a resource at any point in time.
+                    description: Type of this condition. At most one of each condition type may apply to a resource at any point in time.
                     type: string
                 required:
                 - lastTransitionTime
