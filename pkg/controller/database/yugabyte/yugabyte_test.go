@@ -26,11 +26,9 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"github.com/crossplane/crossplane-runtime/pkg/test"
-	kubev1alpha1 "github.com/crossplane/crossplane/apis/kubernetes/v1alpha1"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
 	rookv1alpha1 "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1"
-	corev1 "k8s.io/api/core/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -44,12 +42,6 @@ const (
 	name      = "cool-name"
 	namespace = "cool-namespace"
 	uid       = types.UID("definitely-a-uuid")
-
-	providerName            = "cool-rook"
-	providerSecretName      = "cool-rook-secret"
-	providerSecretNamespace = "cool-rook-secret-namespace"
-	providerSecretKey       = "credentials.json"
-	providerSecretData      = "definitelyjson"
 
 	connectionSecretName = "cool-connection-secret"
 )
@@ -84,7 +76,6 @@ func yugabyteCluster(im ...yugabyteClusterModifier) *v1alpha1.YugabyteCluster {
 		},
 		Spec: v1alpha1.YugabyteClusterSpec{
 			ResourceSpec: runtimev1alpha1.ResourceSpec{
-				ProviderReference:                &runtimev1alpha1.Reference{Name: providerName},
 				WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: connectionSecretName},
 			},
 			YugabyteClusterParameters: v1alpha1.YugabyteClusterParameters{
@@ -164,118 +155,6 @@ func rookYugabyteCluster(im ...rookYugabyteClusterModifier) *rookv1alpha1.YBClus
 
 var _ managed.ExternalClient = &external{}
 var _ managed.ExternalConnecter = &connecter{}
-
-func TestConnectYugabyte(t *testing.T) {
-	provider := kubev1alpha1.Provider{
-		ObjectMeta: metav1.ObjectMeta{Name: providerName},
-		Spec: kubev1alpha1.ProviderSpec{
-			Secret: runtimev1alpha1.SecretReference{
-				Name:      providerSecretName,
-				Namespace: providerSecretNamespace,
-			},
-		},
-	}
-
-	secret := corev1.Secret{
-		ObjectMeta: metav1.ObjectMeta{Namespace: providerSecretNamespace, Name: providerSecretName},
-		Data:       map[string][]byte{providerSecretKey: []byte(providerSecretData)},
-	}
-
-	type yugabyteStrange struct {
-		resource.Managed
-	}
-
-	type args struct {
-		ctx context.Context
-		mg  resource.Managed
-	}
-	type want struct {
-		err error
-	}
-
-	cases := map[string]struct {
-		conn managed.ExternalConnecter
-		args args
-		want want
-	}{
-		"Connected": {
-			conn: &connecter{
-				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
-					switch key {
-					case client.ObjectKey{Name: providerName}:
-						*obj.(*kubev1alpha1.Provider) = provider
-					case client.ObjectKey{Namespace: providerSecretNamespace, Name: providerSecretName}:
-						*obj.(*corev1.Secret) = secret
-					}
-					return nil
-				}},
-				newClient: func(_ context.Context, _ *corev1.Secret) (client.Client, error) { return &test.MockClient{}, nil },
-			},
-			args: args{
-				ctx: context.Background(),
-				mg:  yugabyteCluster(),
-			},
-			want: want{
-				err: nil,
-			},
-		},
-		"NotYugabyteCluster": {
-			conn: &connecter{},
-			args: args{ctx: context.Background(), mg: &yugabyteStrange{}},
-			want: want{err: errors.New(errNotYugabyteCluster)},
-		},
-		"FailedToGetProvider": {
-			conn: &connecter{
-				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
-					return errorBoom
-				}},
-			},
-			args: args{ctx: context.Background(), mg: yugabyteCluster()},
-			want: want{err: errors.Wrap(errorBoom, errGetYugabyteProvider)},
-		},
-		"FailedToGetProviderSecret": {
-			conn: &connecter{
-				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
-					switch key {
-					case client.ObjectKey{Name: providerName}:
-						*obj.(*kubev1alpha1.Provider) = provider
-					case client.ObjectKey{Namespace: providerSecretNamespace, Name: providerSecretName}:
-						return errorBoom
-					}
-					return nil
-				}},
-			},
-			args: args{ctx: context.Background(), mg: yugabyteCluster()},
-			want: want{err: errors.Wrap(errorBoom, errGetYugabyteProviderSecret)},
-		},
-		"FailedToCreateKubernetesClient": {
-			conn: &connecter{
-				client: &test.MockClient{MockGet: func(_ context.Context, key client.ObjectKey, obj runtime.Object) error {
-					switch key {
-					case client.ObjectKey{Name: providerName}:
-						*obj.(*kubev1alpha1.Provider) = provider
-					case client.ObjectKey{Namespace: providerSecretNamespace, Name: providerSecretName}:
-						*obj.(*corev1.Secret) = secret
-					}
-					return nil
-				}},
-				newClient: func(_ context.Context, _ *corev1.Secret) (client.Client, error) { return nil, errorBoom },
-			},
-			args: args{ctx: context.Background(), mg: yugabyteCluster()},
-			want: want{err: errors.Wrap(errorBoom, errNewYugabyteClient)},
-		},
-	}
-
-	for name, tc := range cases {
-		t.Run(name, func(t *testing.T) {
-			_, err := tc.conn.Connect(tc.args.ctx, tc.args.mg)
-
-			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
-				t.Errorf("tc.conn.Connect(...): want error != got error:\n%s", diff)
-			}
-		})
-	}
-}
 
 func TestObserveYugabyte(t *testing.T) {
 	type args struct {

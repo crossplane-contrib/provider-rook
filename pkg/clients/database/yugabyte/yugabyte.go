@@ -17,33 +17,14 @@ limitations under the License.
 package yugabyte
 
 import (
-	"context"
 	"reflect"
 
 	rook "github.com/rook/rook/pkg/apis/rook.io/v1alpha2"
 	rookv1alpha1 "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
-	"github.com/crossplane/provider-rook/pkg/clients"
 )
-
-// NewClient returns a new Kubernetes client with Rook Yugabyte types
-// registered.
-func NewClient(ctx context.Context, s *corev1.Secret) (client.Client, error) {
-	scheme := runtime.NewScheme()
-	scheme.AddKnownTypes(rookv1alpha1.SchemeGroupVersion,
-		&rookv1alpha1.YBCluster{},
-		&rookv1alpha1.YBClusterList{},
-	)
-
-	metav1.AddToGroupVersion(scheme, rookv1alpha1.SchemeGroupVersion)
-
-	return clients.NewClient(ctx, s, scheme)
-}
 
 // CrossToRook converts a Crossplane Yugabyte cluster object to a Rook Yugabyte
 // cluster object.

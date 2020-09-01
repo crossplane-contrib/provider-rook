@@ -65,8 +65,6 @@ github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfc
 github.com/coreos/pkg v0.0.0-20180108230652-97fdf19511ea/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/cpuguy83/go-md2man v1.0.10/go.mod h1:SmD6nW6nTyfqj6ABTjUi3V3JVMnlJmwcJI5acqYI6dE=
 github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7DoTY=
-github.com/crossplane/crossplane v0.13.0-rc.0.20200901002346-79763d19e144 h1:DeVu20fN0LUv09dQAweVz81nNypOe7ms2MbITMKm58Q=
-github.com/crossplane/crossplane v0.13.0-rc.0.20200901002346-79763d19e144/go.mod h1:jK7PsYnp+S9xn9+dQyVMoqqzMlnwjzs6OkRGAx4fszY=
 github.com/crossplane/crossplane-runtime v0.7.1-0.20200421211018-be37c50cc2ab/go.mod h1:e12p4X6dbtqd9GOnph78Epd6aezyvmcMM1+6aQy3VzY=
 github.com/crossplane/crossplane-runtime v0.9.1-0.20200819171434-7e3587dc0b4d/go.mod h1:gNY/21MLBaz5KNP7hmfXbBXp8reYRbwY5B/97Kp4tgM=
 github.com/crossplane/crossplane-runtime v0.9.1-0.20200831142237-1576699ee9ac h1:oRgNeL+rX0+2RYZIogVH9B4jJBmtGcYQ+03dXQW1+PU=
@@ -314,8 +312,6 @@ github.com/modern-go/reflect2 v1.0.1 h1:9f412s+6RmYXLWZSEzVVgPGK7C2PphHj5RJrvfx9
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/munnerz/goautoneg v0.0.0-20120707110453-a547fc61f48d/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
-github.com/muvaf/crossplane v0.2.1-0.20200901092459-37013c69e175 h1:wVk7b3/DZNOalr1jJqdsiHfTAWMfEIbGhOItNRwoS2I=
-github.com/muvaf/crossplane v0.2.1-0.20200901092459-37013c69e175/go.mod h1:jK7PsYnp+S9xn9+dQyVMoqqzMlnwjzs6OkRGAx4fszY=
 github.com/muvaf/crossplane v0.2.1-0.20200901093743-b633092bf61f h1:5ELzuwyYD2U7zRlC9ZYhGSUq7lk0UvwBFkAMCs+6Nh8=
 github.com/muvaf/crossplane v0.2.1-0.20200901093743-b633092bf61f/go.mod h1:jK7PsYnp+S9xn9+dQyVMoqqzMlnwjzs6OkRGAx4fszY=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=

@@ -45,8 +45,6 @@ const (
 	namespace = "cool-namespace"
 	uid       = types.UID("definitely-a-uuid")
 
-	providerName = "cool-rook"
-
 	connectionSecretName = "cool-connection-secret"
 )
 
@@ -80,7 +78,6 @@ func cockroachCluster(im ...cockroachClusterModifier) *v1alpha1.CockroachCluster
 		},
 		Spec: v1alpha1.CockroachClusterSpec{
 			ResourceSpec: runtimev1alpha1.ResourceSpec{
-				ProviderReference:                &runtimev1alpha1.Reference{Name: providerName},
 				WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: connectionSecretName},
 			},
 			CockroachClusterParameters: v1alpha1.CockroachClusterParameters{

@@ -45,7 +45,7 @@ const (
 // NewClient returns a kubernetes client with the information in provider config
 // reference of given managed resource. It assumes the referenced ProviderConfig
 // is of type native Kubernetes ProviderConfig.
-func NewClient(ctx context.Context, kube client.Client, mg resource.Managed, scheme *runtime.Scheme) (client.Client, error) {
+func NewClient(ctx context.Context, kube client.Client, mg resource.Managed, scheme *runtime.Scheme) (client.Client, error) { // nolint:gocyclo
 	pc := &v1beta1.ProviderConfig{}
 	switch {
 	case mg.GetProviderConfigReference() != nil && mg.GetProviderConfigReference().Name != "":
