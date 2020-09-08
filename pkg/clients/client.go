@@ -19,17 +19,18 @@ package clients
 import (
 	"context"
 
-	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
-	"github.com/crossplane/crossplane/apis/kubernetes/v1alpha1"
-	"github.com/crossplane/crossplane/apis/kubernetes/v1beta1"
-	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/client-go/tools/clientcmd"
-
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
+	"github.com/crossplane/crossplane-runtime/pkg/resource"
+	"github.com/crossplane/crossplane/apis/kubernetes/v1alpha1"
+
+	"github.com/crossplane/provider-rook/apis/v1beta1"
 )
 
 const (
@@ -43,8 +44,10 @@ const (
 )
 
 // NewClient returns a kubernetes client with the information in provider config
-// reference of given managed resource. It assumes the referenced ProviderConfig
-// is of type native Kubernetes ProviderConfig.
+// reference of given managed resource. If the reference is a
+// ProviderConfigReference, the Rook ProviderConfig is used. If the reference is
+// a ProviderReference, the deprecated core Crossplane Kubernetes Provider is
+// used.
 func NewClient(ctx context.Context, kube client.Client, mg resource.Managed, scheme *runtime.Scheme) (client.Client, error) { // nolint:gocyclo
 	pc := &v1beta1.ProviderConfig{}
 	switch {
@@ -60,7 +63,7 @@ func NewClient(ctx context.Context, kube client.Client, mg resource.Managed, sch
 			return nil, errors.Wrap(err, errGetProvider)
 		}
 		p.ObjectMeta.DeepCopyInto(&pc.ObjectMeta)
-		pc.Spec.CredentialsSecretRef = runtimev1alpha1.SecretKeySelector{
+		pc.Spec.CredentialsSecretRef = &runtimev1alpha1.SecretKeySelector{
 			SecretReference: runtimev1alpha1.SecretReference{
 				Name:      p.Spec.Secret.Name,
 				Namespace: p.Spec.Secret.Namespace,
