@@ -92,39 +92,6 @@ type YugabyteClusterList struct {
 	Items           []YugabyteCluster `json:"items"`
 }
 
-// A YugabyteClusterClassSpecTemplate is a template for the spec of a dynamically
-// provisioned YugabyteCluster.
-type YugabyteClusterClassSpecTemplate struct {
-	runtimev1alpha1.ClassSpecTemplate `json:",inline"`
-	YugabyteClusterParameters         `json:"forProvider"`
-}
-
-// +kubebuilder:object:root=true
-
-// A YugabyteClusterClass is a resource class. It defines the desired spec of
-// resource claims that use it to dynamically provision a managed resource.
-// +kubebuilder:printcolumn:name="PROVIDER-REF",type="string",JSONPath=".specTemplate.providerRef.name"
-// +kubebuilder:printcolumn:name="RECLAIM-POLICY",type="string",JSONPath=".specTemplate.reclaimPolicy"
-// +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
-// +kubebuilder:resource:scope=Cluster,categories={crossplane,class,rook}
-type YugabyteClusterClass struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
-	// SpecTemplate is a template for the spec of a dynamically provisioned
-	// YugabyteCluster.
-	SpecTemplate YugabyteClusterClassSpecTemplate `json:"specTemplate"`
-}
-
-// +kubebuilder:object:root=true
-
-// YugabyteClusterClassList contains a list of yugabyte cluster resource classes.
-type YugabyteClusterClassList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []YugabyteClusterClass `json:"items"`
-}
-
 // A CockroachClusterParameters defines the desired state of a CockroachCluster.
 type CockroachClusterParameters struct {
 	Name      string `json:"name"`
@@ -173,37 +140,4 @@ type CockroachClusterList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
 	Items           []CockroachCluster `json:"items"`
-}
-
-// A CockroachClusterClassSpecTemplate is a template for the spec of a dynamically
-// provisioned CockroachCluster.
-type CockroachClusterClassSpecTemplate struct {
-	runtimev1alpha1.ClassSpecTemplate `json:",inline"`
-	CockroachClusterParameters        `json:"forProvider"`
-}
-
-// +kubebuilder:object:root=true
-
-// A CockroachClusterClass is a resource class. It defines the desired spec of
-// resource claims that use it to dynamically provision a managed resource.
-// +kubebuilder:printcolumn:name="PROVIDER-REF",type="string",JSONPath=".specTemplate.providerRef.name"
-// +kubebuilder:printcolumn:name="RECLAIM-POLICY",type="string",JSONPath=".specTemplate.reclaimPolicy"
-// +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
-// +kubebuilder:resource:scope=Cluster,categories={crossplane,class,rook}
-type CockroachClusterClass struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
-	// SpecTemplate is a template for the spec of a dynamically provisioned
-	// CockroachCluster.
-	SpecTemplate CockroachClusterClassSpecTemplate `json:"specTemplate"`
-}
-
-// +kubebuilder:object:root=true
-
-// CockroachClusterClassList contains a list of cockroach cluster resource classes.
-type CockroachClusterClassList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []CockroachClusterClass `json:"items"`
 }

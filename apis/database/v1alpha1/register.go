@@ -44,13 +44,6 @@ var (
 	YugabyteClusterGroupVersionKind = SchemeGroupVersion.WithKind(YugabyteClusterKind)
 )
 
-// YugabyteClusterClass type metadata.
-var (
-	YugabyteClusterClassKind             = reflect.TypeOf(YugabyteClusterClass{}).Name()
-	YugabyteClusterClassKindAPIVersion   = YugabyteClusterClassKind + "." + SchemeGroupVersion.String()
-	YugabyteClusterClassGroupVersionKind = SchemeGroupVersion.WithKind(YugabyteClusterClassKind)
-)
-
 // CockroachCluster type metadata.
 var (
 	CockroachClusterKind             = reflect.TypeOf(CockroachCluster{}).Name()
@@ -58,16 +51,7 @@ var (
 	CockroachClusterGroupVersionKind = SchemeGroupVersion.WithKind(CockroachClusterKind)
 )
 
-// CockroachClusterClass type metadata.
-var (
-	CockroachClusterClassKind             = reflect.TypeOf(CockroachClusterClass{}).Name()
-	CockroachClusterClassKindAPIVersion   = CockroachClusterClassKind + "." + SchemeGroupVersion.String()
-	CockroachClusterClassGroupVersionKind = SchemeGroupVersion.WithKind(CockroachClusterClassKind)
-)
-
 func init() {
 	SchemeBuilder.Register(&YugabyteCluster{}, &YugabyteClusterList{})
-	SchemeBuilder.Register(&YugabyteClusterClass{}, &YugabyteClusterClassList{})
 	SchemeBuilder.Register(&CockroachCluster{}, &CockroachClusterList{})
-	SchemeBuilder.Register(&CockroachClusterClass{}, &CockroachClusterClassList{})
 }

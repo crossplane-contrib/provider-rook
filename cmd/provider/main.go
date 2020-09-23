@@ -21,7 +21,6 @@ import (
 	"path/filepath"
 
 	"gopkg.in/alecthomas/kingpin.v2"
-	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 	runtimelog "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
@@ -32,7 +31,6 @@ import (
 	"github.com/crossplane/provider-rook/pkg/controller"
 
 	"github.com/crossplane/crossplane-runtime/pkg/logging"
-	crossplaneapis "github.com/crossplane/crossplane/apis"
 )
 
 func main() {
@@ -85,8 +83,7 @@ func main() {
 
 	log.Info("Adding schemes")
 
-	// add all resources to the manager's runtime scheme
-	if err := addToScheme(mgr.GetScheme()); err != nil {
+	if err := apis.AddToScheme(mgr.GetScheme()); err != nil {
 		kingpin.FatalIfError(err, "Cannot add APIs to scheme")
 	}
 
@@ -105,19 +102,6 @@ func main() {
 
 func controllerSetupWithManager(mgr manager.Manager) error {
 	if err := (&controller.Controllers{}).SetupWithManager(mgr); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// addToScheme adds all resources to the runtime scheme.
-func addToScheme(scheme *runtime.Scheme) error {
-	if err := apis.AddToScheme(scheme); err != nil {
-		return err
-	}
-
-	if err := crossplaneapis.AddToScheme(scheme); err != nil {
 		return err
 	}
 
