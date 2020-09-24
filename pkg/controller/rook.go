@@ -31,13 +31,7 @@ func (c *Controllers) SetupWithManager(mgr ctrl.Manager) error {
 	controllers := []interface {
 		SetupWithManager(ctrl.Manager) error
 	}{
-		&cockroach.ClaimController{},
-		&cockroach.ClaimDefaultingController{},
-		&cockroach.ClaimSchedulingController{},
 		&cockroach.Controller{},
-		&yugabyte.ClaimController{},
-		&yugabyte.ClaimDefaultingController{},
-		&yugabyte.ClaimSchedulingController{},
 		&yugabyte.Controller{},
 	}
 	for _, c := range controllers {

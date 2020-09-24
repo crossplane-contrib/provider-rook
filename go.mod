@@ -3,8 +3,8 @@ module github.com/crossplane/provider-rook
 go 1.13
 
 require (
-	github.com/crossplane/crossplane v0.13.0-rc.0.20200901163614-365a7c3ad900
-	github.com/crossplane/crossplane-runtime v0.9.1-0.20200831142237-1576699ee9ac
+	github.com/crossplane/crossplane v0.13.0-rc.0.20200923162121-6e6cee50d87f
+	github.com/crossplane/crossplane-runtime v0.9.1-0.20200918014829-e7742464e49b
 	github.com/crossplane/crossplane-tools v0.0.0-20200827141855-f51a6598f2bc
 	github.com/google/go-cmp v0.4.0
 	github.com/pkg/errors v0.9.1
