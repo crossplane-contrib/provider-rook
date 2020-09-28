@@ -84,6 +84,15 @@ check-diff: reviewable
 	@test -z "$$(git status --porcelain)" || $(FAIL)
 	@$(OK) branch is clean
 
+# integration tests
+e2e.run: test-integration
+
+# Run integration tests.
+test-integration: $(KIND) $(KUBECTL) $(HELM)
+	@$(INFO) running integration tests using kind $(KIND_VERSION)
+	@$(ROOT_DIR)/cluster/local/integration_tests.sh || $(FAIL)
+	@$(OK) integration tests passed
+
 # Update the submodules, such as the common build scripts.
 submodules:
 	@git submodule sync
@@ -133,7 +142,7 @@ clean-package:
 manifests:
 	@$(WARN) Deprecated. Please run make generate instead.
 
-.PHONY: manifests cobertura reviewable submodules fallthrough run clean-package build-package
+.PHONY: manifests cobertura reviewable submodules fallthrough test-integration run clean-package build-package
 
 # ====================================================================================
 # Special Targets
