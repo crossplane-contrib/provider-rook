@@ -32,10 +32,11 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	rookv1alpha1 "github.com/rook/rook/pkg/apis/cockroachdb.rook.io/v1alpha1"
+
 	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
-	rookv1alpha1 "github.com/rook/rook/pkg/apis/cockroachdb.rook.io/v1alpha1"
 
 	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
 	"github.com/crossplane/provider-rook/pkg/clients/database/cockroach"
@@ -112,7 +113,6 @@ func (e *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	// it available. If a status is added to the Cluster CRD in the future we
 	// should check it to set conditions.
 	c.Status.SetConditions(runtimev1alpha1.Available())
-	resource.SetBindable(c)
 
 	o := managed.ExternalObservation{
 		ResourceExists:    true,

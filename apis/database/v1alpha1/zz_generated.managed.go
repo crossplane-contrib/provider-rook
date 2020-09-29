@@ -18,25 +18,7 @@ limitations under the License.
 
 package v1alpha1
 
-import (
-	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
-	corev1 "k8s.io/api/core/v1"
-)
-
-// GetBindingPhase of this CockroachCluster.
-func (mg *CockroachCluster) GetBindingPhase() runtimev1alpha1.BindingPhase {
-	return mg.Status.GetBindingPhase()
-}
-
-// GetClaimReference of this CockroachCluster.
-func (mg *CockroachCluster) GetClaimReference() *corev1.ObjectReference {
-	return mg.Spec.ClaimReference
-}
-
-// GetClassReference of this CockroachCluster.
-func (mg *CockroachCluster) GetClassReference() *corev1.ObjectReference {
-	return mg.Spec.ClassReference
-}
+import runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
 
 // GetCondition of this CockroachCluster.
 func (mg *CockroachCluster) GetCondition(ct runtimev1alpha1.ConditionType) runtimev1alpha1.Condition {
@@ -61,29 +43,9 @@ func (mg *CockroachCluster) GetProviderReference() *runtimev1alpha1.Reference {
 	return mg.Spec.ProviderReference
 }
 
-// GetReclaimPolicy of this CockroachCluster.
-func (mg *CockroachCluster) GetReclaimPolicy() runtimev1alpha1.ReclaimPolicy {
-	return mg.Spec.ReclaimPolicy
-}
-
 // GetWriteConnectionSecretToReference of this CockroachCluster.
 func (mg *CockroachCluster) GetWriteConnectionSecretToReference() *runtimev1alpha1.SecretReference {
 	return mg.Spec.WriteConnectionSecretToReference
-}
-
-// SetBindingPhase of this CockroachCluster.
-func (mg *CockroachCluster) SetBindingPhase(p runtimev1alpha1.BindingPhase) {
-	mg.Status.SetBindingPhase(p)
-}
-
-// SetClaimReference of this CockroachCluster.
-func (mg *CockroachCluster) SetClaimReference(r *corev1.ObjectReference) {
-	mg.Spec.ClaimReference = r
-}
-
-// SetClassReference of this CockroachCluster.
-func (mg *CockroachCluster) SetClassReference(r *corev1.ObjectReference) {
-	mg.Spec.ClassReference = r
 }
 
 // SetConditions of this CockroachCluster.
@@ -109,29 +71,9 @@ func (mg *CockroachCluster) SetProviderReference(r *runtimev1alpha1.Reference) {
 	mg.Spec.ProviderReference = r
 }
 
-// SetReclaimPolicy of this CockroachCluster.
-func (mg *CockroachCluster) SetReclaimPolicy(r runtimev1alpha1.ReclaimPolicy) {
-	mg.Spec.ReclaimPolicy = r
-}
-
 // SetWriteConnectionSecretToReference of this CockroachCluster.
 func (mg *CockroachCluster) SetWriteConnectionSecretToReference(r *runtimev1alpha1.SecretReference) {
 	mg.Spec.WriteConnectionSecretToReference = r
-}
-
-// GetBindingPhase of this YugabyteCluster.
-func (mg *YugabyteCluster) GetBindingPhase() runtimev1alpha1.BindingPhase {
-	return mg.Status.GetBindingPhase()
-}
-
-// GetClaimReference of this YugabyteCluster.
-func (mg *YugabyteCluster) GetClaimReference() *corev1.ObjectReference {
-	return mg.Spec.ClaimReference
-}
-
-// GetClassReference of this YugabyteCluster.
-func (mg *YugabyteCluster) GetClassReference() *corev1.ObjectReference {
-	return mg.Spec.ClassReference
 }
 
 // GetCondition of this YugabyteCluster.
@@ -157,29 +99,9 @@ func (mg *YugabyteCluster) GetProviderReference() *runtimev1alpha1.Reference {
 	return mg.Spec.ProviderReference
 }
 
-// GetReclaimPolicy of this YugabyteCluster.
-func (mg *YugabyteCluster) GetReclaimPolicy() runtimev1alpha1.ReclaimPolicy {
-	return mg.Spec.ReclaimPolicy
-}
-
 // GetWriteConnectionSecretToReference of this YugabyteCluster.
 func (mg *YugabyteCluster) GetWriteConnectionSecretToReference() *runtimev1alpha1.SecretReference {
 	return mg.Spec.WriteConnectionSecretToReference
-}
-
-// SetBindingPhase of this YugabyteCluster.
-func (mg *YugabyteCluster) SetBindingPhase(p runtimev1alpha1.BindingPhase) {
-	mg.Status.SetBindingPhase(p)
-}
-
-// SetClaimReference of this YugabyteCluster.
-func (mg *YugabyteCluster) SetClaimReference(r *corev1.ObjectReference) {
-	mg.Spec.ClaimReference = r
-}
-
-// SetClassReference of this YugabyteCluster.
-func (mg *YugabyteCluster) SetClassReference(r *corev1.ObjectReference) {
-	mg.Spec.ClassReference = r
 }
 
 // SetConditions of this YugabyteCluster.
@@ -203,11 +125,6 @@ Deprecated: Use SetProviderConfigReference.
 */
 func (mg *YugabyteCluster) SetProviderReference(r *runtimev1alpha1.Reference) {
 	mg.Spec.ProviderReference = r
-}
-
-// SetReclaimPolicy of this YugabyteCluster.
-func (mg *YugabyteCluster) SetReclaimPolicy(r runtimev1alpha1.ReclaimPolicy) {
-	mg.Spec.ReclaimPolicy = r
 }
 
 // SetWriteConnectionSecretToReference of this YugabyteCluster.

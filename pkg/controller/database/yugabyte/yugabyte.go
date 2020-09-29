@@ -111,7 +111,6 @@ func (e *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	// it available. If a status is added to the YBCluster CRD in the future we
 	// should check it to set conditions.
 	c.Status.SetConditions(runtimev1alpha1.Available())
-	resource.SetBindable(c)
 
 	o := managed.ExternalObservation{
 		ResourceExists:    true,
