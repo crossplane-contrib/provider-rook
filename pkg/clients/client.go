@@ -56,6 +56,11 @@ func NewClient(ctx context.Context, kube client.Client, mg resource.Managed, sch
 		if err := kube.Get(ctx, nn, pc); err != nil {
 			return nil, errors.Wrap(err, errGetProviderConfig)
 		}
+
+		t := resource.NewProviderConfigUsageTracker(kube, &v1beta1.ProviderConfigUsage{})
+		if err := t.Track(ctx, mg); err != nil {
+			return nil, errors.Wrap(err, "cannot track ProviderConfigUsage")
+		}
 	case mg.GetProviderReference() != nil && mg.GetProviderReference().Name != "":
 		nn := types.NamespacedName{Name: mg.GetProviderReference().Name}
 		p := &v1alpha1.Provider{}

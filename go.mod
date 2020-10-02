@@ -4,8 +4,8 @@ go 1.13
 
 require (
 	github.com/crossplane/crossplane v0.13.0-rc.0.20200923162121-6e6cee50d87f
-	github.com/crossplane/crossplane-runtime v0.9.1-0.20200927001134-8a386023881e
-	github.com/crossplane/crossplane-tools v0.0.0-20200927001143-74d962a1b2d6
+	github.com/crossplane/crossplane-runtime v0.9.1-0.20201001234308-3f1afd106a8c
+	github.com/crossplane/crossplane-tools v0.0.0-20201001224552-fb258cc0eb30
 	github.com/google/go-cmp v0.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/rook/rook v1.1.2
