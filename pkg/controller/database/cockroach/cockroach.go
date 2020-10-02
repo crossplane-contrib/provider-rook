@@ -19,7 +19,6 @@ package cockroach
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/crossplane/provider-rook/pkg/clients"
 
@@ -32,10 +31,13 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	rookv1alpha1 "github.com/rook/rook/pkg/apis/cockroachdb.rook.io/v1alpha1"
+
 	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
+	"github.com/crossplane/crossplane-runtime/pkg/event"
+	"github.com/crossplane/crossplane-runtime/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
-	rookv1alpha1 "github.com/rook/rook/pkg/apis/cockroachdb.rook.io/v1alpha1"
 
 	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
 	"github.com/crossplane/provider-rook/pkg/clients/database/cockroach"
@@ -51,20 +53,19 @@ const (
 	errDeleteCockroachCluster = "cannot delete Cockroach cluster in target Kubernetes cluster"
 )
 
-// Controller is responsible for adding the CockroachCluster
-// controller and its corresponding reconciler to the manager with any runtime configuration.
-type Controller struct{}
-
-// SetupWithManager creates a new CockroachCluster Controller and adds it to the
-// Manager with default RBAC. The Manager will set fields on the Controller and
-// start it when the Manager is Started.
-func (c *Controller) SetupWithManager(mgr ctrl.Manager) error {
+// Setup creates a new CockroachCluster Controller and adds it to the Manager
+// with default RBAC. The Manager will set fields on the Controller and start it
+// when the Manager is Started.
+func Setup(mgr ctrl.Manager, l logging.Logger) error {
+	name := managed.ControllerName(fmt.Sprintf("%s.%s", v1alpha1.CockroachClusterKind, v1alpha1.Group))
 	return ctrl.NewControllerManagedBy(mgr).
-		Named(strings.ToLower(fmt.Sprintf("%s.%s", v1alpha1.CockroachClusterKind, v1alpha1.Group))).
+		Named(name).
 		For(&v1alpha1.CockroachCluster{}).
 		Complete(managed.NewReconciler(mgr,
 			resource.ManagedKind(v1alpha1.CockroachClusterGroupVersionKind),
-			managed.WithExternalConnecter(&connecter{client: mgr.GetClient()})))
+			managed.WithExternalConnecter(&connecter{client: mgr.GetClient()}),
+			managed.WithLogger(l.WithValues("controller", name)),
+			managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name)))))
 }
 
 type connecter struct {
@@ -112,7 +113,6 @@ func (e *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	// it available. If a status is added to the Cluster CRD in the future we
 	// should check it to set conditions.
 	c.Status.SetConditions(runtimev1alpha1.Available())
-	resource.SetBindable(c)
 
 	o := managed.ExternalObservation{
 		ResourceExists:    true,

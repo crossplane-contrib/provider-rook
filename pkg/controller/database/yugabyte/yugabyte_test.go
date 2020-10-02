@@ -22,10 +22,6 @@ import (
 
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
-	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
-	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
-	"github.com/crossplane/crossplane-runtime/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
 	rookv1alpha1 "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1"
@@ -34,6 +30,11 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
+	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
+	"github.com/crossplane/crossplane-runtime/pkg/resource"
+	"github.com/crossplane/crossplane-runtime/pkg/test"
 
 	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
 )
@@ -61,10 +62,6 @@ type yugabyteClusterModifier func(*v1alpha1.YugabyteCluster)
 
 func yugabyteWithConditions(c ...runtimev1alpha1.Condition) yugabyteClusterModifier {
 	return func(i *v1alpha1.YugabyteCluster) { i.Status.SetConditions(c...) }
-}
-
-func yugabyteWithBindingPhase(p runtimev1alpha1.BindingPhase) yugabyteClusterModifier {
-	return func(i *v1alpha1.YugabyteCluster) { i.Status.SetBindingPhase(p) }
 }
 
 func yugabyteCluster(im ...yugabyteClusterModifier) *v1alpha1.YugabyteCluster {
@@ -192,8 +189,7 @@ func TestObserveYugabyte(t *testing.T) {
 			},
 			want: want{
 				mg: yugabyteCluster(
-					yugabyteWithConditions(runtimev1alpha1.Available()),
-					yugabyteWithBindingPhase(runtimev1alpha1.BindingPhaseUnbound)),
+					yugabyteWithConditions(runtimev1alpha1.Available())),
 				observation: managed.ExternalObservation{
 					ResourceExists:    true,
 					ConnectionDetails: managed.ConnectionDetails{},

@@ -19,25 +19,25 @@ package controller
 import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
+	"github.com/crossplane/crossplane-runtime/pkg/logging"
+
+	"github.com/crossplane/provider-rook/pkg/controller/config"
 	"github.com/crossplane/provider-rook/pkg/controller/database/cockroach"
 	"github.com/crossplane/provider-rook/pkg/controller/database/yugabyte"
 )
 
-// Controllers passes down config and adds individual controllers to the manager.
-type Controllers struct{}
-
-// SetupWithManager adds all Rook controllers to the manager.
-func (c *Controllers) SetupWithManager(mgr ctrl.Manager) error {
-	controllers := []interface {
-		SetupWithManager(ctrl.Manager) error
-	}{
-		&cockroach.Controller{},
-		&yugabyte.Controller{},
-	}
-	for _, c := range controllers {
-		if err := c.SetupWithManager(mgr); err != nil {
+// Setup creates all AWS controllers with the supplied logger and adds them to
+// the supplied manager.
+func Setup(mgr ctrl.Manager, l logging.Logger) error {
+	for _, setup := range []func(ctrl.Manager, logging.Logger) error{
+		config.Setup,
+		cockroach.Setup,
+		yugabyte.Setup,
+	} {
+		if err := setup(mgr, l); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }

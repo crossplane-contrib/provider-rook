@@ -19,7 +19,6 @@ package yugabyte
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/pkg/errors"
 	rookv1alpha1 "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1"
@@ -31,6 +30,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
+	"github.com/crossplane/crossplane-runtime/pkg/event"
+	"github.com/crossplane/crossplane-runtime/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
@@ -49,20 +50,19 @@ const (
 	errDeleteYugabyteCluster = "cannot delete Yugabyte cluster in target Kubernetes cluster"
 )
 
-// Controller is responsible for adding the YugabyteCluster
-// controller and its corresponding reconciler to the manager with any runtime configuration.
-type Controller struct{}
-
-// SetupWithManager creates a new YugabyteCluster Controller and adds it to the
-// Manager with default RBAC. The Manager will set fields on the Controller and
-// start it when the Manager is Started.
-func (c *Controller) SetupWithManager(mgr ctrl.Manager) error {
+// Setup creates a new YugabyteCluster Controller and adds it to the Manager
+// with default RBAC. The Manager will set fields on the Controller and start it
+// when the Manager is Started.
+func Setup(mgr ctrl.Manager, l logging.Logger) error {
+	name := managed.ControllerName(fmt.Sprintf("%s.%s", v1alpha1.YugabyteClusterKind, v1alpha1.Group))
 	return ctrl.NewControllerManagedBy(mgr).
-		Named(strings.ToLower(fmt.Sprintf("%s.%s", v1alpha1.YugabyteClusterKind, v1alpha1.Group))).
+		Named(name).
 		For(&v1alpha1.YugabyteCluster{}).
 		Complete(managed.NewReconciler(mgr,
 			resource.ManagedKind(v1alpha1.YugabyteClusterGroupVersionKind),
-			managed.WithExternalConnecter(&connecter{client: mgr.GetClient()})))
+			managed.WithExternalConnecter(&connecter{client: mgr.GetClient()}),
+			managed.WithLogger(l.WithValues("controller", name)),
+			managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name)))))
 }
 
 type connecter struct {
@@ -111,7 +111,6 @@ func (e *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	// it available. If a status is added to the YBCluster CRD in the future we
 	// should check it to set conditions.
 	c.Status.SetConditions(runtimev1alpha1.Available())
-	resource.SetBindable(c)
 
 	o := managed.ExternalObservation{
 		ResourceExists:    true,

@@ -20,10 +20,6 @@ import (
 	"context"
 	"testing"
 
-	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
-	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
-	"github.com/crossplane/crossplane-runtime/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
 	rookv1alpha1 "github.com/rook/rook/pkg/apis/cockroachdb.rook.io/v1alpha1"
@@ -35,6 +31,11 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
+	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
+	"github.com/crossplane/crossplane-runtime/pkg/resource"
+	"github.com/crossplane/crossplane-runtime/pkg/test"
 
 	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
 	corev1alpha1 "github.com/crossplane/provider-rook/apis/v1alpha1"
@@ -63,10 +64,6 @@ type cockroachClusterModifier func(*v1alpha1.CockroachCluster)
 
 func withConditions(c ...runtimev1alpha1.Condition) cockroachClusterModifier {
 	return func(i *v1alpha1.CockroachCluster) { i.Status.SetConditions(c...) }
-}
-
-func withBindingPhase(p runtimev1alpha1.BindingPhase) cockroachClusterModifier {
-	return func(i *v1alpha1.CockroachCluster) { i.Status.SetBindingPhase(p) }
 }
 
 func cockroachCluster(im ...cockroachClusterModifier) *v1alpha1.CockroachCluster {
@@ -212,8 +209,7 @@ func TestObserveCockroach(t *testing.T) {
 			},
 			want: want{
 				mg: cockroachCluster(
-					withConditions(runtimev1alpha1.Available()),
-					withBindingPhase(runtimev1alpha1.BindingPhaseUnbound)),
+					withConditions(runtimev1alpha1.Available())),
 				observation: managed.ExternalObservation{
 					ResourceExists:    true,
 					ConnectionDetails: managed.ConnectionDetails{},
