@@ -2,6 +2,13 @@ apiVersion: meta.pkg.crossplane.io/v1alpha1
 kind: Provider
 metadata:
   name: provider-rook
+  annotations:
+    company: Crossplane
+    maintainer: Crossplane Maintainers <info@crossplane.io>
+    source: github.com/crossplane/provider-rook
+    license: Apache-2.0
+    description: |
+      provider-rook is the Crossplane infrastructure provider for Rook.
 spec:
   controller:
     image: crossplane/provider-rook-controller:VERSION
