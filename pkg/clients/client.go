@@ -28,7 +28,6 @@ import (
 
 	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
-	"github.com/crossplane/crossplane/apis/kubernetes/v1alpha1"
 
 	"github.com/crossplane/provider-rook/apis/v1beta1"
 )
@@ -36,7 +35,6 @@ import (
 const (
 	errGetProviderConfig     = "cannot get referenced ProviderConfig"
 	errTrackUsage            = "cannot track ProviderConfig usage"
-	errGetProvider           = "cannot get referenced Provider"
 	errNoSecretRef           = "no connection secret reference was supplied"
 	errGetSecret             = "cannot get referenced credentials secret"
 	errNoRefGiven            = "neither providerConfigRef nor providerRef was supplied"
@@ -56,39 +54,9 @@ func NewClient(ctx context.Context, c client.Client, mg resource.Managed, s *run
 	switch {
 	case mg.GetProviderConfigReference() != nil:
 		return UseProviderConfig(ctx, c, mg, s)
-	case mg.GetProviderReference() != nil:
-		return UseProvider(ctx, c, mg, s)
 	default:
 		return nil, errors.New(errNoRefGiven)
 	}
-}
-
-// UseProvider to create a client.
-// Deprecated; Use UseProviderConfig.
-func UseProvider(ctx context.Context, c client.Client, mg resource.Managed, s *runtime.Scheme) (client.Client, error) {
-	p := &v1alpha1.Provider{}
-	if err := c.Get(ctx, types.NamespacedName{Name: mg.GetProviderReference().Name}, p); err != nil {
-		return nil, errors.Wrap(err, errGetProvider)
-	}
-
-	ref := p.Spec.Secret
-	secret := &corev1.Secret{}
-	nn := types.NamespacedName{Name: ref.Name, Namespace: ref.Namespace}
-	if err := c.Get(ctx, nn, secret); err != nil {
-		return nil, errors.Wrap(err, errGetSecret)
-	}
-
-	cfg, err := clientcmd.NewClientConfigFromBytes(secret.Data[runtimev1alpha1.ResourceCredentialsSecretKubeconfigKey])
-	if err != nil {
-		return nil, errors.Wrap(err, errConstructClientConfig)
-	}
-	restCfg, err := cfg.ClientConfig()
-	if err != nil {
-		return nil, errors.Wrap(err, errConstructRestConfig)
-	}
-
-	kc, err := client.New(restCfg, client.Options{Scheme: s})
-	return kc, errors.Wrap(err, errNewClient)
 }
 
 // UseProviderConfig to create a client.
