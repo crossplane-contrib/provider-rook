@@ -8,7 +8,26 @@ metadata:
     source: github.com/crossplane/provider-rook
     license: Apache-2.0
     description: |
-      provider-rook is the Crossplane infrastructure provider for Rook.
+    descriptionShort: |
+      The Rook Crossplane provider enables resource management for the Rook.
+
+    description: |
+      The Rook Crossplane provider adds support for managing Rook resources
+      from a Crossplane Kubernetes cluster. YugabyteDB and CockroachDB cluster
+      resources can be provisioned, updated, and deleted by this provider.
+
+    readme: |
+      `provider-rook` is the Crossplane infrastructure provider for
+      [Rook](https://rook.io/).
+
+      Available resources and their fields can be found in the [CRD
+      Docs](https://doc.crds.dev/github.com/crossplane/provider-rook).
+
+      If you encounter an issue please reach out on
+      [slack.crossplane.io](https://slack.crossplane.io) and create an issue in
+      the [crossplane/provider-rook](https://github.com/crossplane/provider-rook)
+      repo.
+
 spec:
   controller:
     image: crossplane/provider-rook-controller:VERSION
