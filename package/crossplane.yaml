@@ -9,7 +9,7 @@ metadata:
     license: Apache-2.0
     description: |
     descriptionShort: |
-      The Rook Crossplane provider enables resource management for the Rook.
+      The Rook Crossplane provider enables resource management for Rook.
 
     description: |
       The Rook Crossplane provider adds support for managing Rook resources
