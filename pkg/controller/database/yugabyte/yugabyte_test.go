@@ -31,7 +31,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"github.com/crossplane/crossplane-runtime/pkg/test"
@@ -60,7 +60,7 @@ type yugabyteStrange struct {
 
 type yugabyteClusterModifier func(*v1alpha1.YugabyteCluster)
 
-func yugabyteWithConditions(c ...runtimev1alpha1.Condition) yugabyteClusterModifier {
+func yugabyteWithConditions(c ...xpv1.Condition) yugabyteClusterModifier {
 	return func(i *v1alpha1.YugabyteCluster) { i.Status.SetConditions(c...) }
 }
 
@@ -72,8 +72,8 @@ func yugabyteCluster(im ...yugabyteClusterModifier) *v1alpha1.YugabyteCluster {
 			Finalizers: []string{},
 		},
 		Spec: v1alpha1.YugabyteClusterSpec{
-			ResourceSpec: runtimev1alpha1.ResourceSpec{
-				WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: connectionSecretName},
+			ResourceSpec: xpv1.ResourceSpec{
+				WriteConnectionSecretToReference: &xpv1.SecretReference{Name: connectionSecretName},
 			},
 			YugabyteClusterParameters: v1alpha1.YugabyteClusterParameters{
 				Name:      name,
@@ -189,7 +189,7 @@ func TestObserveYugabyte(t *testing.T) {
 			},
 			want: want{
 				mg: yugabyteCluster(
-					yugabyteWithConditions(runtimev1alpha1.Available())),
+					yugabyteWithConditions(xpv1.Available())),
 				observation: managed.ExternalObservation{
 					ResourceExists:    true,
 					ConnectionDetails: managed.ConnectionDetails{},
@@ -270,7 +270,7 @@ func TestCreateYugabyte(t *testing.T) {
 				mg:  yugabyteCluster(),
 			},
 			want: want{
-				mg: yugabyteCluster(yugabyteWithConditions(runtimev1alpha1.Creating())),
+				mg: yugabyteCluster(yugabyteWithConditions(xpv1.Creating())),
 			},
 		},
 		"NotYugabyteCluster": {
@@ -295,7 +295,7 @@ func TestCreateYugabyte(t *testing.T) {
 				mg:  yugabyteCluster(),
 			},
 			want: want{
-				mg:  yugabyteCluster(yugabyteWithConditions(runtimev1alpha1.Creating())),
+				mg:  yugabyteCluster(yugabyteWithConditions(xpv1.Creating())),
 				err: errors.Wrap(errorBoom, errCreateYugabyteCluster),
 			},
 		},
@@ -474,7 +474,7 @@ func TestDeleteYugabyte(t *testing.T) {
 				mg:  yugabyteCluster(),
 			},
 			want: want{
-				mg: yugabyteCluster(yugabyteWithConditions(runtimev1alpha1.Deleting())),
+				mg: yugabyteCluster(yugabyteWithConditions(xpv1.Deleting())),
 			},
 		},
 		"NotYugabyteCluster": {
@@ -506,7 +506,7 @@ func TestDeleteYugabyte(t *testing.T) {
 				mg:  yugabyteCluster(),
 			},
 			want: want{
-				mg:  yugabyteCluster(yugabyteWithConditions(runtimev1alpha1.Deleting())),
+				mg:  yugabyteCluster(yugabyteWithConditions(xpv1.Deleting())),
 				err: errors.Wrap(errorBoom, errDeleteYugabyteCluster),
 			},
 		},

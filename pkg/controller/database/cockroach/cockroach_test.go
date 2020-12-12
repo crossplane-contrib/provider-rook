@@ -32,7 +32,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"github.com/crossplane/crossplane-runtime/pkg/test"
@@ -62,7 +62,7 @@ type cockroachStrange struct {
 
 type cockroachClusterModifier func(*v1alpha1.CockroachCluster)
 
-func withConditions(c ...runtimev1alpha1.Condition) cockroachClusterModifier {
+func withConditions(c ...xpv1.Condition) cockroachClusterModifier {
 	return func(i *v1alpha1.CockroachCluster) { i.Status.SetConditions(c...) }
 }
 
@@ -74,8 +74,8 @@ func cockroachCluster(im ...cockroachClusterModifier) *v1alpha1.CockroachCluster
 			Finalizers: []string{},
 		},
 		Spec: v1alpha1.CockroachClusterSpec{
-			ResourceSpec: runtimev1alpha1.ResourceSpec{
-				WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: connectionSecretName},
+			ResourceSpec: xpv1.ResourceSpec{
+				WriteConnectionSecretToReference: &xpv1.SecretReference{Name: connectionSecretName},
 			},
 			CockroachClusterParameters: v1alpha1.CockroachClusterParameters{
 				Name:        name,
@@ -209,7 +209,7 @@ func TestObserveCockroach(t *testing.T) {
 			},
 			want: want{
 				mg: cockroachCluster(
-					withConditions(runtimev1alpha1.Available())),
+					withConditions(xpv1.Available())),
 				observation: managed.ExternalObservation{
 					ResourceExists:    true,
 					ConnectionDetails: managed.ConnectionDetails{},
@@ -290,7 +290,7 @@ func TestCreateCockroach(t *testing.T) {
 				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg: cockroachCluster(withConditions(runtimev1alpha1.Creating())),
+				mg: cockroachCluster(withConditions(xpv1.Creating())),
 			},
 		},
 		"NotCockroachCluster": {
@@ -315,7 +315,7 @@ func TestCreateCockroach(t *testing.T) {
 				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg:  cockroachCluster(withConditions(runtimev1alpha1.Creating())),
+				mg:  cockroachCluster(withConditions(xpv1.Creating())),
 				err: errors.Wrap(errorBoom, errCreateCockroachCluster),
 			},
 		},
@@ -494,7 +494,7 @@ func TestDeleteCockroach(t *testing.T) {
 				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg: cockroachCluster(withConditions(runtimev1alpha1.Deleting())),
+				mg: cockroachCluster(withConditions(xpv1.Deleting())),
 			},
 		},
 		"NotCockroachCluster": {
@@ -526,7 +526,7 @@ func TestDeleteCockroach(t *testing.T) {
 				mg:  cockroachCluster(),
 			},
 			want: want{
-				mg:  cockroachCluster(withConditions(runtimev1alpha1.Deleting())),
+				mg:  cockroachCluster(withConditions(xpv1.Deleting())),
 				err: errors.Wrap(errorBoom, errDeleteCockroachCluster),
 			},
 		},

@@ -18,20 +18,20 @@ limitations under the License.
 
 package v1alpha1
 
-import runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
+import xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 
 // GetCondition of this CockroachCluster.
-func (mg *CockroachCluster) GetCondition(ct runtimev1alpha1.ConditionType) runtimev1alpha1.Condition {
+func (mg *CockroachCluster) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
 	return mg.Status.GetCondition(ct)
 }
 
 // GetDeletionPolicy of this CockroachCluster.
-func (mg *CockroachCluster) GetDeletionPolicy() runtimev1alpha1.DeletionPolicy {
+func (mg *CockroachCluster) GetDeletionPolicy() xpv1.DeletionPolicy {
 	return mg.Spec.DeletionPolicy
 }
 
 // GetProviderConfigReference of this CockroachCluster.
-func (mg *CockroachCluster) GetProviderConfigReference() *runtimev1alpha1.Reference {
+func (mg *CockroachCluster) GetProviderConfigReference() *xpv1.Reference {
 	return mg.Spec.ProviderConfigReference
 }
 
@@ -39,27 +39,27 @@ func (mg *CockroachCluster) GetProviderConfigReference() *runtimev1alpha1.Refere
 GetProviderReference of this CockroachCluster.
 Deprecated: Use GetProviderConfigReference.
 */
-func (mg *CockroachCluster) GetProviderReference() *runtimev1alpha1.Reference {
+func (mg *CockroachCluster) GetProviderReference() *xpv1.Reference {
 	return mg.Spec.ProviderReference
 }
 
 // GetWriteConnectionSecretToReference of this CockroachCluster.
-func (mg *CockroachCluster) GetWriteConnectionSecretToReference() *runtimev1alpha1.SecretReference {
+func (mg *CockroachCluster) GetWriteConnectionSecretToReference() *xpv1.SecretReference {
 	return mg.Spec.WriteConnectionSecretToReference
 }
 
 // SetConditions of this CockroachCluster.
-func (mg *CockroachCluster) SetConditions(c ...runtimev1alpha1.Condition) {
+func (mg *CockroachCluster) SetConditions(c ...xpv1.Condition) {
 	mg.Status.SetConditions(c...)
 }
 
 // SetDeletionPolicy of this CockroachCluster.
-func (mg *CockroachCluster) SetDeletionPolicy(r runtimev1alpha1.DeletionPolicy) {
+func (mg *CockroachCluster) SetDeletionPolicy(r xpv1.DeletionPolicy) {
 	mg.Spec.DeletionPolicy = r
 }
 
 // SetProviderConfigReference of this CockroachCluster.
-func (mg *CockroachCluster) SetProviderConfigReference(r *runtimev1alpha1.Reference) {
+func (mg *CockroachCluster) SetProviderConfigReference(r *xpv1.Reference) {
 	mg.Spec.ProviderConfigReference = r
 }
 
@@ -67,27 +67,27 @@ func (mg *CockroachCluster) SetProviderConfigReference(r *runtimev1alpha1.Refere
 SetProviderReference of this CockroachCluster.
 Deprecated: Use SetProviderConfigReference.
 */
-func (mg *CockroachCluster) SetProviderReference(r *runtimev1alpha1.Reference) {
+func (mg *CockroachCluster) SetProviderReference(r *xpv1.Reference) {
 	mg.Spec.ProviderReference = r
 }
 
 // SetWriteConnectionSecretToReference of this CockroachCluster.
-func (mg *CockroachCluster) SetWriteConnectionSecretToReference(r *runtimev1alpha1.SecretReference) {
+func (mg *CockroachCluster) SetWriteConnectionSecretToReference(r *xpv1.SecretReference) {
 	mg.Spec.WriteConnectionSecretToReference = r
 }
 
 // GetCondition of this YugabyteCluster.
-func (mg *YugabyteCluster) GetCondition(ct runtimev1alpha1.ConditionType) runtimev1alpha1.Condition {
+func (mg *YugabyteCluster) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
 	return mg.Status.GetCondition(ct)
 }
 
 // GetDeletionPolicy of this YugabyteCluster.
-func (mg *YugabyteCluster) GetDeletionPolicy() runtimev1alpha1.DeletionPolicy {
+func (mg *YugabyteCluster) GetDeletionPolicy() xpv1.DeletionPolicy {
 	return mg.Spec.DeletionPolicy
 }
 
 // GetProviderConfigReference of this YugabyteCluster.
-func (mg *YugabyteCluster) GetProviderConfigReference() *runtimev1alpha1.Reference {
+func (mg *YugabyteCluster) GetProviderConfigReference() *xpv1.Reference {
 	return mg.Spec.ProviderConfigReference
 }
 
@@ -95,27 +95,27 @@ func (mg *YugabyteCluster) GetProviderConfigReference() *runtimev1alpha1.Referen
 GetProviderReference of this YugabyteCluster.
 Deprecated: Use GetProviderConfigReference.
 */
-func (mg *YugabyteCluster) GetProviderReference() *runtimev1alpha1.Reference {
+func (mg *YugabyteCluster) GetProviderReference() *xpv1.Reference {
 	return mg.Spec.ProviderReference
 }
 
 // GetWriteConnectionSecretToReference of this YugabyteCluster.
-func (mg *YugabyteCluster) GetWriteConnectionSecretToReference() *runtimev1alpha1.SecretReference {
+func (mg *YugabyteCluster) GetWriteConnectionSecretToReference() *xpv1.SecretReference {
 	return mg.Spec.WriteConnectionSecretToReference
 }
 
 // SetConditions of this YugabyteCluster.
-func (mg *YugabyteCluster) SetConditions(c ...runtimev1alpha1.Condition) {
+func (mg *YugabyteCluster) SetConditions(c ...xpv1.Condition) {
 	mg.Status.SetConditions(c...)
 }
 
 // SetDeletionPolicy of this YugabyteCluster.
-func (mg *YugabyteCluster) SetDeletionPolicy(r runtimev1alpha1.DeletionPolicy) {
+func (mg *YugabyteCluster) SetDeletionPolicy(r xpv1.DeletionPolicy) {
 	mg.Spec.DeletionPolicy = r
 }
 
 // SetProviderConfigReference of this YugabyteCluster.
-func (mg *YugabyteCluster) SetProviderConfigReference(r *runtimev1alpha1.Reference) {
+func (mg *YugabyteCluster) SetProviderConfigReference(r *xpv1.Reference) {
 	mg.Spec.ProviderConfigReference = r
 }
 
@@ -123,11 +123,11 @@ func (mg *YugabyteCluster) SetProviderConfigReference(r *runtimev1alpha1.Referen
 SetProviderReference of this YugabyteCluster.
 Deprecated: Use SetProviderConfigReference.
 */
-func (mg *YugabyteCluster) SetProviderReference(r *runtimev1alpha1.Reference) {
+func (mg *YugabyteCluster) SetProviderReference(r *xpv1.Reference) {
 	mg.Spec.ProviderReference = r
 }
 
 // SetWriteConnectionSecretToReference of this YugabyteCluster.
-func (mg *YugabyteCluster) SetWriteConnectionSecretToReference(r *runtimev1alpha1.SecretReference) {
+func (mg *YugabyteCluster) SetWriteConnectionSecretToReference(r *xpv1.SecretReference) {
 	mg.Spec.WriteConnectionSecretToReference = r
 }

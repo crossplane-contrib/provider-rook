@@ -17,7 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
-	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -57,13 +57,13 @@ type YugabyteClusterParameters struct {
 
 // A YugabyteClusterSpec defines the desired state of a YugabyteCluster.
 type YugabyteClusterSpec struct {
-	runtimev1alpha1.ResourceSpec `json:",inline"`
-	YugabyteClusterParameters    `json:"forProvider"`
+	xpv1.ResourceSpec         `json:",inline"`
+	YugabyteClusterParameters `json:"forProvider"`
 }
 
 // A YugabyteClusterStatus defines the current state of a YugabyteCluster.
 type YugabyteClusterStatus struct {
-	runtimev1alpha1.ResourceStatus `json:",inline"`
+	xpv1.ResourceStatus `json:",inline"`
 }
 
 // +kubebuilder:object:root=true
@@ -107,13 +107,13 @@ type CockroachClusterParameters struct {
 
 // A CockroachClusterSpec defines the desired state of a CockroachCluster.
 type CockroachClusterSpec struct {
-	runtimev1alpha1.ResourceSpec `json:",inline"`
-	CockroachClusterParameters   `json:"forProvider"`
+	xpv1.ResourceSpec          `json:",inline"`
+	CockroachClusterParameters `json:"forProvider"`
 }
 
 // A CockroachClusterStatus defines the current state of a CockroachCluster.
 type CockroachClusterStatus struct {
-	runtimev1alpha1.ResourceStatus `json:",inline"`
+	xpv1.ResourceStatus `json:",inline"`
 }
 
 // +kubebuilder:object:root=true

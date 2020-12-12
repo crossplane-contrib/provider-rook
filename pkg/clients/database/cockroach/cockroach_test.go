@@ -19,12 +19,13 @@ package cockroach
 import (
 	"testing"
 
-	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
 	"github.com/google/go-cmp/cmp"
 	rookv1alpha1 "github.com/rook/rook/pkg/apis/cockroachdb.rook.io/v1alpha1"
 	rook "github.com/rook/rook/pkg/apis/rook.io/v1alpha2"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 
 	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
 	corev1alpha1 "github.com/crossplane/provider-rook/apis/v1alpha1"
@@ -50,9 +51,9 @@ func cockroachCluster(im ...cockroachClusterModifier) *v1alpha1.CockroachCluster
 			Name: name,
 		},
 		Spec: v1alpha1.CockroachClusterSpec{
-			ResourceSpec: runtimev1alpha1.ResourceSpec{
-				ProviderReference:                &runtimev1alpha1.Reference{Name: providerName},
-				WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: connectionSecretName},
+			ResourceSpec: xpv1.ResourceSpec{
+				ProviderReference:                &xpv1.Reference{Name: providerName},
+				WriteConnectionSecretToReference: &xpv1.SecretReference{Name: connectionSecretName},
 			},
 			CockroachClusterParameters: v1alpha1.CockroachClusterParameters{
 				Name:        name,
