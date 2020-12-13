@@ -19,10 +19,11 @@ package yugabyte
 import (
 	"testing"
 
-	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
 	"github.com/google/go-cmp/cmp"
 	rookv1alpha1 "github.com/rook/rook/pkg/apis/yugabytedb.rook.io/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 
 	"github.com/crossplane/provider-rook/apis/database/v1alpha1"
 )
@@ -48,9 +49,9 @@ func yugabyteCluster(im ...yugabyteClusterModifier) *v1alpha1.YugabyteCluster {
 			Name: name,
 		},
 		Spec: v1alpha1.YugabyteClusterSpec{
-			ResourceSpec: runtimev1alpha1.ResourceSpec{
-				ProviderReference:                &runtimev1alpha1.Reference{Name: providerName},
-				WriteConnectionSecretToReference: &runtimev1alpha1.SecretReference{Name: connectionSecretName},
+			ResourceSpec: xpv1.ResourceSpec{
+				ProviderReference:                &xpv1.Reference{Name: providerName},
+				WriteConnectionSecretToReference: &xpv1.SecretReference{Name: connectionSecretName},
 			},
 			YugabyteClusterParameters: v1alpha1.YugabyteClusterParameters{
 				Name:      name,

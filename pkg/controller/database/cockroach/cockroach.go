@@ -33,7 +33,7 @@ import (
 
 	rookv1alpha1 "github.com/rook/rook/pkg/apis/cockroachdb.rook.io/v1alpha1"
 
-	runtimev1alpha1 "github.com/crossplane/crossplane-runtime/apis/core/v1alpha1"
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/pkg/event"
 	"github.com/crossplane/crossplane-runtime/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
@@ -112,7 +112,7 @@ func (e *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	// If we are able to get the resource Cluster instance, we will consider
 	// it available. If a status is added to the Cluster CRD in the future we
 	// should check it to set conditions.
-	c.Status.SetConditions(runtimev1alpha1.Available())
+	c.Status.SetConditions(xpv1.Available())
 
 	o := managed.ExternalObservation{
 		ResourceExists:    true,
@@ -129,7 +129,7 @@ func (e *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 		return managed.ExternalCreation{}, errors.New(errNotCockroachCluster)
 	}
 
-	c.Status.SetConditions(runtimev1alpha1.Creating())
+	c.Status.SetConditions(xpv1.Creating())
 
 	err := e.client.Create(ctx, cockroach.CrossToRook(c))
 	return managed.ExternalCreation{}, errors.Wrap(err, errCreateCockroachCluster)
@@ -168,7 +168,7 @@ func (e *external) Delete(ctx context.Context, mg resource.Managed) error {
 		return errors.New(errNotCockroachCluster)
 	}
 
-	c.SetConditions(runtimev1alpha1.Deleting())
+	c.SetConditions(xpv1.Deleting())
 
 	key := types.NamespacedName{
 		Name:      c.Spec.CockroachClusterParameters.Name,
